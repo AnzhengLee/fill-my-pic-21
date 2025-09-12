@@ -342,6 +342,37 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
     return autopsy.toString();
   };
 
+  // 性别数字转换函数
+  const convertGender = (gender: any): string => {
+    if (!gender) return '';
+    if (typeof gender === 'number' || /^\d+$/.test(gender)) {
+      const num = parseInt(gender);
+      switch (num) {
+        case 1: return '男';
+        case 2: return '女';
+        default: return gender.toString();
+      }
+    }
+    return gender.toString();
+  };
+
+  // 婚姻状况数字转换函数
+  const convertMaritalStatus = (maritalStatus: any): string => {
+    if (!maritalStatus) return '';
+    if (typeof maritalStatus === 'number' || /^\d+$/.test(maritalStatus)) {
+      const num = parseInt(maritalStatus);
+      switch (num) {
+        case 1: return '未婚';
+        case 2: return '已婚';
+        case 3: return '丧偶';
+        case 4: return '离婚';
+        case 9: return '其他';
+        default: return maritalStatus.toString();
+      }
+    }
+    return maritalStatus.toString();
+  };
+
   // 邮编字段调试信息
   console.log('邮编字段调试信息:');
   console.log('- difyData.邮编:', JSON.stringify(difyData.邮编), typeof difyData.邮编);
@@ -364,7 +395,7 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
   const phase1Data: Record<string, any> = {
     // 基本信息 - 直接映射
     name: difyData.姓名 || '',
-    gender: difyData.性别 || '',
+    gender: convertGender(difyData.性别 || difyData.gender),
     age: parseInt(difyData.年龄) || null,
     birth_date: convertDateFormat(difyData.出生日期) || '',
     nationality: difyData.国籍 || '',
@@ -373,7 +404,7 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
     ethnicity: difyData.民族 || '',
     id_number: difyData.身份证号 || '',
     occupation: difyData.职业 || '',
-    marital_status: difyData.婚姻 || '',
+    marital_status: convertMaritalStatus(difyData.婚姻 || difyData.marital_status),
     phone: difyData.电话 || '',
     current_address: difyData.现住址 || '',
     // 直接映射邮编字段，不使用fallback逻辑
