@@ -373,6 +373,22 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
     return maritalStatus.toString();
   };
 
+  // 入院途径数字转换函数
+  const convertAdmissionPath = (admissionPath: any): string => {
+    if (!admissionPath) return '';
+    if (typeof admissionPath === 'number' || /^\d+$/.test(admissionPath)) {
+      const num = parseInt(admissionPath);
+      switch (num) {
+        case 1: return '急诊';
+        case 2: return '门诊';
+        case 3: return '其他医疗机构转入';
+        case 9: return '其他';
+        default: return admissionPath.toString();
+      }
+    }
+    return admissionPath.toString();
+  };
+
   // 邮编字段调试信息
   console.log('邮编字段调试信息:');
   console.log('- difyData.邮编:', JSON.stringify(difyData.邮编), typeof difyData.邮编);
@@ -428,7 +444,7 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
     transfer_department: difyData.转科科别 || difyData.入院信息?.转科科别 || '',
     admission_ward: difyData.入院信息?.入院病房 || difyData.入院信息?.病房 || '',
     admission_time: difyData.入院信息?.入院时间 || '',
-    admission_path: difyData.入院信息?.入院途径 || '',
+    admission_path: convertAdmissionPath(difyData.入院信息?.入院途径 || difyData.admission_path),
     
     // 出院信息 - 安全映射
     discharge_time: difyData.出院信息?.出院时间 || '',
