@@ -88,6 +88,7 @@ const formSchema = z.object({
   intern_physician: z.string().optional(),
   responsible_nurse: z.string().optional(),
   fellow_physician: z.string().optional(),
+  medical_student: z.string().optional(),
   coder: z.string().optional(),
   
   // Quality control
@@ -181,21 +182,21 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
         if (data.admission_time) setValue('admission_time', data.admission_time);
         if (data.admission_path) setValue('admission_path', data.admission_path);
         if (data.transfer_department) setValue('transfer_department', data.transfer_department);
-        console.log('✓ 阶段3完成: 入院信息已填入');
+        // console.log('✓ 阶段3完成: 入院信息已填入');
 
         // 阶段4：出院信息填充
         if (data.discharge_time) setValue('discharge_time', data.discharge_time);
         if (data.discharge_department) setValue('discharge_department', data.discharge_department);
         if (data.discharge_ward) setValue('discharge_ward', data.discharge_ward);
         if (data.actual_days) setValue('actual_days', data.actual_days);
-        console.log('✓ 阶段4完成: 出院信息已填入');
+        // console.log('✓ 阶段4完成: 出院信息已填入');
 
         // 阶段5：主要诊断信息填充
         if (data.outpatient_diagnosis) setValue('outpatient_diagnosis', data.outpatient_diagnosis);
         if (data.main_diagnosis) setValue('main_diagnosis', data.main_diagnosis);
         if (data.main_disease_code) setValue('main_disease_code', data.main_disease_code);
         if (data.admission_condition) setValue('admission_condition', data.admission_condition);
-        console.log('✓ 阶段5完成: 主要诊断信息已填入');
+        // console.log('✓ 阶段5完成: 主要诊断信息已填入');
 
         // 阶段6：病理信息填充
         if (data.pathology_diagnosis) setValue('pathology_diagnosis', data.pathology_diagnosis);
@@ -209,7 +210,7 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
         if (data.autopsy) setValue('autopsy', data.autopsy);
         if (data.external_cause) setValue('external_cause', data.external_cause);
         if (data.external_cause_code) setValue('external_cause_code', data.external_cause_code);
-        console.log('✓ 阶段6完成: 病理信息已填入');
+        // console.log('✓ 阶段6完成: 病理信息已填入');
 
         // 阶段7：医务人员信息填充
         if (data.department_director) setValue('department_director', data.department_director);
@@ -220,19 +221,19 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
         if (data.fellow_physician) setValue('fellow_physician', data.fellow_physician);
         if (data.responsible_nurse) setValue('responsible_nurse', data.responsible_nurse);
         if (data.coder) setValue('coder', data.coder);
-        console.log('✓ 阶段7完成: 医务人员信息已填入');
+        // console.log('✓ 阶段7完成: 医务人员信息已填入');
 
         // 阶段8：质控信息填充
         if (data.quality) setValue('quality', data.quality);
         if (data.quality_physician) setValue('quality_physician', data.quality_physician);
         if (data.quality_nurse) setValue('quality_nurse', data.quality_nurse);
         if (data.quality_date) setValue('quality_date', data.quality_date);
-        console.log('✓ 阶段8完成: 质控信息已填入');
+        // console.log('✓ 阶段8完成: 质控信息已填入');
 
         // 阶段9：门急诊疾病编码填充
         if (data.outpatient_disease_code) {
           setValue('outpatient_disease_code', data.outpatient_disease_code);
-          console.log('✓ 阶段9完成: 门急诊疾病编码已填入');
+          // console.log('✓ 阶段9完成: 门急诊疾病编码已填入');
         }
 
         // 阶段10：其他诊断数据填充
@@ -242,7 +243,7 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
           );
           if (validDiagnoses.length > 0) {
             setOtherDiagnoses(validDiagnoses);
-            console.log('✓ 阶段10完成: 其他诊断数据已填入');
+            // console.log('✓ 阶段10完成: 其他诊断数据已填入');
           }
         }
 
@@ -375,6 +376,7 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
             intern_physician: data.intern_physician || '',
             responsible_nurse: data.responsible_nurse || '',
             fellow_physician: data.fellow_physician || '',
+            medical_student: data.medical_student || '',
             coder: data.coder || ''
           },
           

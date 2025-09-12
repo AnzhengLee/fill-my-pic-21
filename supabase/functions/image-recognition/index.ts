@@ -249,10 +249,7 @@ async function callDifyAPI(imageFile: File): Promise<Record<string, any>> {
 
 // 渐进式数据映射函数
 function mapDifyResultToFormData(difyData: any): Record<string, any> {
-  console.log('开始渐进式映射Dify数据到表单字段:', difyData);
-  console.log('=== 调试诊断信息数据结构 ===');
-  console.log('完整difyData:', JSON.stringify(difyData, null, 2));
-  console.log('诊断信息:', JSON.stringify(difyData.诊断信息, null, 2));
+  // console.log('开始渐进式映射Dify数据到表单字段:', difyData);
   
   // 日期格式转换函数
   const convertDateFormat = (dateStr: string): string => {
@@ -273,14 +270,9 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
 
   // 入院病情数字转换函数
   const convertAdmissionCondition = (condition: any): string => {
-    console.log('convertAdmissionCondition 接收参数:', condition, '类型:', typeof condition);
-    if (!condition) {
-      console.log('convertAdmissionCondition 返回空字符串');
-      return '';
-    }
+    if (!condition) return '';
     if (typeof condition === 'number' || /^\d+$/.test(condition)) {
       const num = parseInt(condition);
-      console.log('convertAdmissionCondition 转换数字:', num);
       switch (num) {
         case 1: return '有';
         case 2: return '临床未确定';
@@ -289,9 +281,7 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
         default: return condition.toString();
       }
     }
-    const result = condition.toString();
-    console.log('convertAdmissionCondition 返回原值:', result);
-    return result;
+    return condition.toString();
   };
 
   // 药物过敏数字转换函数
@@ -403,10 +393,7 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
     return admissionPath.toString();
   };
 
-  // 邮编字段调试信息
-  console.log('邮编字段调试信息:');
-  console.log('- difyData.邮编:', JSON.stringify(difyData.邮编), typeof difyData.邮编);
-  console.log('- difyData.户口邮编:', JSON.stringify(difyData.户口邮编), typeof difyData.户口邮编);
+  // 邮编字段处理
   
   // 安全获取邮编值的函数
   const safeGetPostalCode = (value: any): string => {
@@ -418,8 +405,7 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
   const currentPostalCode = safeGetPostalCode(difyData.邮编);
   const householdPostalCode = safeGetPostalCode(difyData.户口邮编);
   
-  console.log('- 处理后的现住址邮编:', JSON.stringify(currentPostalCode));
-  console.log('- 处理后的户口邮编:', JSON.stringify(householdPostalCode));
+  // 处理完成
   
   // 第一阶段：安全映射 - 基本文本字段
   const phase1Data: Record<string, any> = {
@@ -483,8 +469,6 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
   const normalizedOtherDiagnoses = [];
   
   for (let i = 0; i < maxLength; i++) {
-    console.log(`=== 其他诊断入院病情第${i}项 ===`);
-    console.log('otherAdmissionConditions[i]:', otherAdmissionConditions[i]);
     normalizedOtherDiagnoses.push({
       diagnosis: otherDiagnoses[i] || '',
       disease_code: otherDiseaseCodes[i] || '',
@@ -500,23 +484,14 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
     // 主要诊断相关
     main_diagnosis: diagnosisInfo.主要诊断 || '',
     main_disease_code: diagnosisInfo.主要诊断疾病编码 || diagnosisInfo.疾病编码 || '',
-    admission_condition: (() => {
-      console.log('=== 住院诊断入院病情查找过程 ===');
-      console.log('diagnosisInfo.住院诊断入院病情:', diagnosisInfo.住院诊断入院病情);
-      console.log('diagnosisInfo["住院诊断入院病情"]:', diagnosisInfo['住院诊断入院病情']);
-      console.log('diagnosisInfo.入院病情:', diagnosisInfo.入院病情);
-      console.log('difyData.住院诊断入院病情:', difyData.住院诊断入院病情);
-      
-      const value = diagnosisInfo.住院诊断入院病情 || 
-                   diagnosisInfo['住院诊断入院病情'] ||
-                   diagnosisInfo.入院病情 ||
-                   difyData.住院诊断入院病情 ||
-                   (Array.isArray(diagnosisInfo.入院病情) ? 
-                     diagnosisInfo.入院病情[0] : diagnosisInfo.入院病情);
-      
-      console.log('最终选择的value:', value);
-      return convertAdmissionCondition(value);
-    })(),
+    admission_condition: convertAdmissionCondition(
+      diagnosisInfo.住院诊断入院病情 || 
+      diagnosisInfo['住院诊断入院病情'] ||
+      diagnosisInfo.入院病情 ||
+      difyData.住院诊断入院病情 ||
+      (Array.isArray(diagnosisInfo.入院病情) ? 
+        diagnosisInfo.入院病情[0] : diagnosisInfo.入院病情)
+    ),
     
     // 其他诊断相关
     other_diagnoses: normalizedOtherDiagnoses,
@@ -593,6 +568,5 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
     hasDiagnosisInfo: !!(mappedData.main_diagnosis || mappedData.outpatient_diagnosis)
   };
 
-  console.log('映射后的表单数据及元数据:', mappedData);
   return mappedData;
 }
