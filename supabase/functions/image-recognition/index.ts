@@ -490,6 +490,9 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
     main_disease_code: diagnosisInfo.主要诊断疾病编码 || diagnosisInfo.疾病编码 || '',
     admission_condition: convertAdmissionCondition(
       diagnosisInfo.住院诊断入院病情 || 
+      diagnosisInfo['住院诊断入院病情'] ||
+      diagnosisInfo.入院病情 ||
+      difyData.住院诊断入院病情 ||
       (Array.isArray(diagnosisInfo.入院病情) ? 
         diagnosisInfo.入院病情[0] : diagnosisInfo.入院病情)
     ),
