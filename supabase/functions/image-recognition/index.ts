@@ -308,6 +308,8 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
         case 2: return 'B';
         case 3: return 'O';
         case 4: return 'AB';
+        case 5: return '不详';
+        case 6: return '未查';
         default: return bloodType.toString();
       }
     }
@@ -322,6 +324,8 @@ function mapDifyResultToFormData(difyData: any): Record<string, any> {
       switch (num) {
         case 1: return '阴';
         case 2: return '阳';
+        case 3: return '不详';
+        case 4: return '未查';
         default: return rh.toString();
       }
     }
