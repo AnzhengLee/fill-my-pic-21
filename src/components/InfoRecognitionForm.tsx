@@ -295,54 +295,31 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
           d.diagnosis.trim() || d.disease_code.trim() || d.admission_condition.trim()
         );
 
-        // 准备数据库数据结构
+        // 准备数据库数据结构 - 匹配数据库表结构
         const dbData = {
           name: data.name,
           gender: data.gender,
-          birth_date: data.birth_date ? data.birth_date.toISOString().split('T')[0] : null,
-          age: data.age,
-          nationality: data.nationality,
-          birth_place: data.birth_place,
-          native_place: data.native_place,
-          ethnicity: data.ethnicity,
-          id_number: data.id_number,
-          occupation: data.occupation,
-          marital_status: data.marital_status,
-          current_address: data.current_address,
-          phone: data.phone,
-          postal_code: data.postal_code,
-          work_unit: data.work_unit,
-          work_phone: data.work_phone,
-          work_postal_code: data.work_postal_code,
-          household_address: data.household_address,
-          household_postal_code: data.household_postal_code,
+          birth_date: data.birth_date ? data.birth_date.toISOString().split('T')[0] : '',
+          age: data.age || 0,
+          nationality: data.nationality || '',
+          birth_place: data.birth_place || '',
+          native_place: data.native_place || '',
+          ethnicity: data.ethnicity || '',
+          id_number: data.id_number || '',
+          occupation: data.occupation || '',
+          marital_status: data.marital_status || '',
+          contact_address: data.current_address || '',
+          phone: data.phone || '',
+          postal_code: data.postal_code || '',
+          work_unit: data.work_unit || '',
+          admission_method: data.admission_path || '',
+          admission_date: data.admission_time || '',
+          admission_department: data.admission_department || '',
+          bed_number: data.admission_ward || '',
+          discharge_date: data.discharge_time || '',
+          actual_stay_days: data.actual_days ? parseInt(data.actual_days.replace(/[^\d]/g, '')) || 0 : 0,
           
-          // 联系人信息
-          contact_person: {
-            name: data.contact_name || '',
-            phone: data.contact_phone || '',
-            relationship: data.contact_relationship || '',
-            address: data.contact_address || ''
-          },
-          
-          // 入院信息
-          admission_info: {
-            admission_path: data.admission_path || '',
-            admission_time: data.admission_time || '',
-            admission_department: data.admission_department || '',
-            transfer_department: data.transfer_department || '',
-            ward: data.admission_ward || ''
-          },
-          
-          // 出院信息
-          discharge_info: {
-            discharge_time: data.discharge_time || '',
-            discharge_department: data.discharge_department || '',
-            ward: data.discharge_ward || '',
-            actual_days: data.actual_days || ''
-          },
-          
-          // 诊断信息
+          // 诊断信息 (JSONB)
           diagnosis_info: {
             outpatient_diagnosis: data.outpatient_diagnosis || '',
             outpatient_disease_code: data.outpatient_disease_code || '',
@@ -352,7 +329,7 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
             other_diagnoses: validOtherDiagnoses
           },
           
-          // 病理信息
+          // 病理信息 (JSONB)
           pathology_info: {
             pathology_diagnosis: data.pathology_diagnosis || '',
             disease_code: data.disease_code || '',
@@ -367,7 +344,7 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
             external_cause_code: data.external_cause_code || ''
           },
           
-          // 医务人员
+          // 医务人员 (JSONB)
           medical_personnel: {
             department_director: data.department_director || '',
             attending_physician: data.attending_physician || '',
@@ -380,7 +357,7 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
             coder: data.coder || ''
           },
           
-          // 质控
+          // 质控 (JSONB)
           quality_control: {
             quality: data.quality || '',
             quality_physician: data.quality_physician || '',
