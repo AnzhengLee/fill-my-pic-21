@@ -1,0 +1,41 @@
+-- Extend nursing_follow_ups table with structured form fields
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS follow_up_method TEXT[];
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS discharge_medication BOOLEAN;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS medication_name TEXT;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS medication_dosage TEXT;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS timely_medication BOOLEAN;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS adverse_reaction BOOLEAN;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS adverse_reaction_detail TEXT;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS diet_preference BOOLEAN;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS preferred_food TEXT;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS avoided_food TEXT;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS water_intake NUMERIC;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS urine_output BOOLEAN;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS urine_color TEXT;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS stone_passage BOOLEAN;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS sleep_condition TEXT;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS sleep_medication TEXT;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS psychological_status TEXT;
+ALTER TABLE public.nursing_follow_ups ADD COLUMN IF NOT EXISTS social_support TEXT;
+
+-- Extend follow_up_visits table with detailed form fields
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS recurrence_status BOOLEAN;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS recurrence_stone_size NUMERIC;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS imaging_method TEXT[];
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS alt NUMERIC;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS ast NUMERIC;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS ggt NUMERIC;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS creatinine NUMERIC;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS wbc NUMERIC;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS hemoglobin NUMERIC;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS urine_ph NUMERIC;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS urine_nit TEXT;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS urine_wbc TEXT;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS urine_culture TEXT;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS medication_info TEXT;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS medication_dosage TEXT;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS medication_duration TEXT;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS medication_compliance TEXT;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS adverse_reaction TEXT;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS adverse_reaction_details TEXT;
+ALTER TABLE public.follow_up_visits ADD COLUMN IF NOT EXISTS next_treatment_plan TEXT;
