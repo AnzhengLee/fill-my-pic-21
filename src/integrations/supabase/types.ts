@@ -14,7 +14,105 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      medical_records: {
+        Row: {
+          actual_stay_days: number
+          admission_date: string
+          admission_department: string
+          admission_method: string
+          age: number
+          bed_number: string
+          birth_date: string
+          birth_place: string
+          contact_address: string
+          created_at: string
+          diagnosis_info: Json | null
+          discharge_date: string
+          ethnicity: string
+          fees: Json | null
+          gender: string
+          id: string
+          id_number: string
+          marital_status: string
+          medical_personnel: Json | null
+          name: string
+          nationality: string
+          native_place: string
+          occupation: string
+          pathology_info: Json | null
+          phone: string
+          postal_code: string
+          quality_control: Json | null
+          updated_at: string
+          user_id: string | null
+          work_unit: string
+        }
+        Insert: {
+          actual_stay_days: number
+          admission_date: string
+          admission_department: string
+          admission_method: string
+          age: number
+          bed_number: string
+          birth_date: string
+          birth_place: string
+          contact_address: string
+          created_at?: string
+          diagnosis_info?: Json | null
+          discharge_date: string
+          ethnicity: string
+          fees?: Json | null
+          gender: string
+          id?: string
+          id_number: string
+          marital_status: string
+          medical_personnel?: Json | null
+          name: string
+          nationality: string
+          native_place: string
+          occupation: string
+          pathology_info?: Json | null
+          phone: string
+          postal_code: string
+          quality_control?: Json | null
+          updated_at?: string
+          user_id?: string | null
+          work_unit: string
+        }
+        Update: {
+          actual_stay_days?: number
+          admission_date?: string
+          admission_department?: string
+          admission_method?: string
+          age?: number
+          bed_number?: string
+          birth_date?: string
+          birth_place?: string
+          contact_address?: string
+          created_at?: string
+          diagnosis_info?: Json | null
+          discharge_date?: string
+          ethnicity?: string
+          fees?: Json | null
+          gender?: string
+          id?: string
+          id_number?: string
+          marital_status?: string
+          medical_personnel?: Json | null
+          name?: string
+          nationality?: string
+          native_place?: string
+          occupation?: string
+          pathology_info?: Json | null
+          phone?: string
+          postal_code?: string
+          quality_control?: Json | null
+          updated_at?: string
+          user_id?: string | null
+          work_unit?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
