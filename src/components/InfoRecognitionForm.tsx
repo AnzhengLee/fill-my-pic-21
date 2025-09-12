@@ -295,8 +295,9 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
           d.diagnosis.trim() || d.disease_code.trim() || d.admission_condition.trim()
         );
 
-        // 准备数据库数据结构 - 匹配数据库表结构
+        // 准备数据库数据结构 - 匹配数据库表结构 (匿名提交，user_id为null)
         const dbData = {
+          user_id: null, // 匿名提交
           name: data.name,
           gender: data.gender,
           birth_date: data.birth_date ? data.birth_date.toISOString().split('T')[0] : '',

@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Save, FileText, List } from "lucide-react";
+import { ArrowLeft, Save, FileText, List, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { InfoRecognitionForm, FormRef } from "@/components/InfoRecognitionForm";
 import ImageUploader from "@/components/ImageUploader";
@@ -60,15 +60,26 @@ const Home = () => {
               <h1 className="text-3xl font-bold text-foreground">医疗信息识别系统</h1>
             </div>
             
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate("/records")}
-              className="flex items-center gap-2"
-            >
-              <List className="w-4 h-4" />
-              查看记录
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/admin-setup")}
+                className="flex items-center gap-2 mr-2"
+              >
+                <Shield className="w-4 h-4" />
+                创建管理员
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/admin-login")}
+                className="flex items-center gap-2"
+              >
+                <Shield className="w-4 h-4" />
+                管理员登录
+              </Button>
+            </div>
           </div>
           
           <p className="text-muted-foreground">
