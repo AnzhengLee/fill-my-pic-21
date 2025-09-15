@@ -310,12 +310,6 @@ export default function RecordDetail() {
                 </span>
               </div>
               <div>
-                <strong>实习医师:</strong> 
-                <span className={record.medical_personnel?.intern_physician ? "" : "text-muted-foreground"}>
-                  {record.medical_personnel?.intern_physician || "-"}
-                </span>
-              </div>
-              <div>
                 <strong>住院医师:</strong> 
                 <span className={record.medical_personnel?.resident_physician ? "" : "text-muted-foreground"}>
                   {record.medical_personnel?.resident_physician || "-"}
@@ -331,6 +325,12 @@ export default function RecordDetail() {
                 <strong>进修医师:</strong> 
                 <span className={record.medical_personnel?.fellow_physician ? "" : "text-muted-foreground"}>
                   {record.medical_personnel?.fellow_physician || "-"}
+                </span>
+              </div>
+              <div>
+                <strong>实习医师:</strong> 
+                <span className={record.medical_personnel?.intern_physician ? "" : "text-muted-foreground"}>
+                  {record.medical_personnel?.intern_physician || "-"}
                 </span>
               </div>
               <div>
