@@ -18,6 +18,8 @@ interface MedicalRecord {
   id_number: string;
   occupation: string;
   marital_status: string;
+  birth_place: string;
+  native_place: string;
   contact_address: string;
   phone: string;
   postal_code: string;
@@ -176,11 +178,14 @@ export default function RecordDetail() {
               <div><strong>性别:</strong> {record.gender}</div>
               <div><strong>年龄:</strong> {record.age}</div>
               <div><strong>出生日期:</strong> {record.birth_date}</div>
+              <div><strong>出生地:</strong> {record.birth_place}</div>
+              <div><strong>籍贯:</strong> {record.native_place}</div>
               <div><strong>国籍:</strong> {record.nationality}</div>
               <div><strong>民族:</strong> {record.ethnicity}</div>
               <div><strong>身份证号:</strong> {record.id_number}</div>
               <div><strong>职业:</strong> {record.occupation}</div>
               <div><strong>婚姻状况:</strong> {record.marital_status}</div>
+              <div><strong>工作单位:</strong> {record.work_unit}</div>
               <div><strong>联系地址:</strong> {record.contact_address}</div>
               <div><strong>电话:</strong> {record.phone}</div>
               <div><strong>邮编:</strong> {record.postal_code}</div>
@@ -212,21 +217,68 @@ export default function RecordDetail() {
                 {record.diagnosis_info.main_diagnosis && (
                   <div className="mb-2"><strong>主要诊断:</strong> {record.diagnosis_info.main_diagnosis}</div>
                 )}
-                {record.diagnosis_info.main_disease_code && (
-                  <div className="mb-2"><strong>主要疾病代码:</strong> {record.diagnosis_info.main_disease_code}</div>
+                 {record.diagnosis_info.main_disease_code && (
+                   <div className="mb-2"><strong>主要疾病代码:</strong> {record.diagnosis_info.main_disease_code}</div>
+                 )}
+                 {record.diagnosis_info.outpatient_diagnosis && (
+                   <div className="mb-2"><strong>门诊诊断:</strong> {record.diagnosis_info.outpatient_diagnosis}</div>
+                 )}
+                 {record.diagnosis_info.outpatient_disease_code && (
+                   <div className="mb-2"><strong>门诊疾病代码:</strong> {record.diagnosis_info.outpatient_disease_code}</div>
+                 )}
+                 {record.diagnosis_info.admission_condition && (
+                   <div className="mb-2"><strong>入院情况:</strong> {record.diagnosis_info.admission_condition}</div>
+                 )}
+                 {record.diagnosis_info.other_diagnoses && record.diagnosis_info.other_diagnoses.length > 0 && (
+                   <div>
+                     <strong>其他诊断:</strong>
+                     <ul className="list-disc list-inside ml-4 mt-1">
+                       {record.diagnosis_info.other_diagnoses.map((diagnosis: any, index: number) => (
+                         <li key={index}>{diagnosis.diagnosis} ({diagnosis.disease_code})</li>
+                       ))}
+                     </ul>
+                   </div>
+                 )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 病理信息 */}
+          {record.pathology_info && (
+            <Card>
+              <CardHeader>
+                <CardTitle>病理信息</CardTitle>
+              </CardHeader>
+              <CardContent className="grid md:grid-cols-2 gap-4">
+                {record.pathology_info.blood_type && (
+                  <div><strong>血型:</strong> {record.pathology_info.blood_type}</div>
                 )}
-                {record.diagnosis_info.outpatient_diagnosis && (
-                  <div className="mb-2"><strong>门诊诊断:</strong> {record.diagnosis_info.outpatient_diagnosis}</div>
+                {record.pathology_info.rh && (
+                  <div><strong>Rh:</strong> {record.pathology_info.rh}</div>
                 )}
-                {record.diagnosis_info.other_diagnoses && record.diagnosis_info.other_diagnoses.length > 0 && (
-                  <div>
-                    <strong>其他诊断:</strong>
-                    <ul className="list-disc list-inside ml-4 mt-1">
-                      {record.diagnosis_info.other_diagnoses.map((diagnosis: any, index: number) => (
-                        <li key={index}>{diagnosis.diagnosis} ({diagnosis.disease_code})</li>
-                      ))}
-                    </ul>
-                  </div>
+                {record.pathology_info.drug_allergy && (
+                  <div><strong>药物过敏:</strong> {record.pathology_info.drug_allergy}</div>
+                )}
+                {record.pathology_info.allergy_drugs && (
+                  <div><strong>过敏药物:</strong> {record.pathology_info.allergy_drugs}</div>
+                )}
+                {record.pathology_info.pathology_diagnosis && (
+                  <div><strong>病理诊断:</strong> {record.pathology_info.pathology_diagnosis}</div>
+                )}
+                {record.pathology_info.pathology_number && (
+                  <div><strong>病理号:</strong> {record.pathology_info.pathology_number}</div>
+                )}
+                {record.pathology_info.pathology_code && (
+                  <div><strong>病理代码:</strong> {record.pathology_info.pathology_code}</div>
+                )}
+                {record.pathology_info.external_cause && (
+                  <div><strong>外因:</strong> {record.pathology_info.external_cause}</div>
+                )}
+                {record.pathology_info.external_cause_code && (
+                  <div><strong>外因代码:</strong> {record.pathology_info.external_cause_code}</div>
+                )}
+                {record.pathology_info.autopsy && (
+                  <div><strong>尸检:</strong> {record.pathology_info.autopsy}</div>
                 )}
               </CardContent>
             </Card>
@@ -239,9 +291,56 @@ export default function RecordDetail() {
                 <CardTitle>医务人员</CardTitle>
               </CardHeader>
               <CardContent className="grid md:grid-cols-2 gap-4">
-                {Object.entries(record.medical_personnel).map(([key, value]) => (
-                  value && <div key={key}><strong>{key}:</strong> {value as string}</div>
-                ))}
+                {record.medical_personnel.department_director && (
+                  <div><strong>科主任:</strong> {record.medical_personnel.department_director}</div>
+                )}
+                {record.medical_personnel.attending_physician && (
+                  <div><strong>主任（副主任）医师:</strong> {record.medical_personnel.attending_physician}</div>
+                )}
+                {record.medical_personnel.treating_physician && (
+                  <div><strong>主治医师:</strong> {record.medical_personnel.treating_physician}</div>
+                )}
+                {record.medical_personnel.resident_physician && (
+                  <div><strong>住院医师:</strong> {record.medical_personnel.resident_physician}</div>
+                )}
+                {record.medical_personnel.intern_physician && (
+                  <div><strong>实习医师:</strong> {record.medical_personnel.intern_physician}</div>
+                )}
+                {record.medical_personnel.responsible_nurse && (
+                  <div><strong>责任护士:</strong> {record.medical_personnel.responsible_nurse}</div>
+                )}
+                {record.medical_personnel.fellow_physician && (
+                  <div><strong>进修医师:</strong> {record.medical_personnel.fellow_physician}</div>
+                )}
+                {record.medical_personnel.medical_student && (
+                  <div><strong>医学生:</strong> {record.medical_personnel.medical_student}</div>
+                )}
+                {record.medical_personnel.coder && (
+                  <div><strong>编码员:</strong> {record.medical_personnel.coder}</div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 质控信息 */}
+          {record.quality_control && (
+            <Card>
+              <CardHeader>
+                <CardTitle>质控信息</CardTitle>
+              </CardHeader>
+              <CardContent className="grid md:grid-cols-2 gap-4">
+                {record.quality_control.quality && (
+                  <div><strong>质量等级:</strong> {record.quality_control.quality}</div>
+                )}
+                {record.quality_control.quality_physician && (
+                  <div><strong>质控医师:</strong> {record.quality_control.quality_physician}</div>
+                )}
+                {record.quality_control.quality_nurse && (
+                  <div><strong>质控护士:</strong> {record.quality_control.quality_nurse}</div>
+                )}
+                {record.quality_control.quality_date && (
+                  <div><strong>质控日期:</strong> {record.quality_control.quality_date}</div>
+                )}
               </CardContent>
             </Card>
           )}

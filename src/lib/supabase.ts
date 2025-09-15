@@ -30,22 +30,21 @@ export interface MedicalRecord {
   occupation: string
   marital_status: string
   birth_place: string
-  current_address: string
-  household_address: string
+  native_place: string
+  contact_address: string
   phone: string
   postal_code: string
-  household_postal_code: string
   work_unit: string
-  work_phone: string
-  work_postal_code: string
-  contact_person: Record<string, any>
-  admission_info: Record<string, any>
-  discharge_info: Record<string, any>
+  admission_method: string
+  admission_date: string
+  admission_department: string
+  bed_number: string
+  discharge_date: string
+  actual_stay_days: number
   diagnosis_info: Record<string, any>
   pathology_info: Record<string, any>
   medical_personnel: Record<string, any>
   quality_control: Record<string, any>
-  native_place: string
   created_at: string
   updated_at: string
   created_by: string

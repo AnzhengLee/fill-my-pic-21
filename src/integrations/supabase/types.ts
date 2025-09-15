@@ -29,7 +29,6 @@ export type Database = {
           diagnosis_info: Json | null
           discharge_date: string
           ethnicity: string
-          fees: Json | null
           gender: string
           id: string
           id_number: string
@@ -61,7 +60,6 @@ export type Database = {
           diagnosis_info?: Json | null
           discharge_date: string
           ethnicity: string
-          fees?: Json | null
           gender: string
           id?: string
           id_number: string
@@ -93,7 +91,6 @@ export type Database = {
           diagnosis_info?: Json | null
           discharge_date?: string
           ethnicity?: string
-          fees?: Json | null
           gender?: string
           id?: string
           id_number?: string
