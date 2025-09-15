@@ -215,31 +215,31 @@ export default function RecordDetail() {
                 <CardTitle>诊断信息</CardTitle>
               </CardHeader>
               <CardContent>
+                {record.diagnosis_info.outpatient_diagnosis && (
+                  <div className="mb-2"><strong>门（急）诊诊断:</strong> {record.diagnosis_info.outpatient_diagnosis}</div>
+                )}
+                {record.diagnosis_info.outpatient_disease_code && (
+                  <div className="mb-2"><strong>门诊疾病编码:</strong> {record.diagnosis_info.outpatient_disease_code}</div>
+                )}
                 {record.diagnosis_info.main_diagnosis && (
                   <div className="mb-2"><strong>主要诊断:</strong> {record.diagnosis_info.main_diagnosis}</div>
                 )}
-                 {record.diagnosis_info.main_disease_code && (
-                   <div className="mb-2"><strong>主要疾病代码:</strong> {record.diagnosis_info.main_disease_code}</div>
-                 )}
-                 {record.diagnosis_info.outpatient_diagnosis && (
-                   <div className="mb-2"><strong>门诊诊断:</strong> {record.diagnosis_info.outpatient_diagnosis}</div>
-                 )}
-                 {record.diagnosis_info.outpatient_disease_code && (
-                   <div className="mb-2"><strong>门诊疾病代码:</strong> {record.diagnosis_info.outpatient_disease_code}</div>
-                 )}
-                 {record.diagnosis_info.admission_condition && (
-                   <div className="mb-2"><strong>入院情况:</strong> {record.diagnosis_info.admission_condition}</div>
-                 )}
-                 {record.diagnosis_info.other_diagnoses && record.diagnosis_info.other_diagnoses.length > 0 && (
-                   <div>
-                     <strong>其他诊断:</strong>
-                     <ul className="list-disc list-inside ml-4 mt-1">
-                       {record.diagnosis_info.other_diagnoses.map((diagnosis: any, index: number) => (
-                         <li key={index}>{diagnosis.diagnosis} ({diagnosis.disease_code})</li>
-                       ))}
-                     </ul>
-                   </div>
-                 )}
+                {record.diagnosis_info.main_disease_code && (
+                  <div className="mb-2"><strong>主要诊断疾病编码:</strong> {record.diagnosis_info.main_disease_code}</div>
+                )}
+                {record.diagnosis_info.admission_condition && (
+                  <div className="mb-2"><strong>入院病情:</strong> {record.diagnosis_info.admission_condition}</div>
+                )}
+                {record.diagnosis_info.other_diagnoses && record.diagnosis_info.other_diagnoses.length > 0 && (
+                  <div>
+                    <strong>其他诊断:</strong>
+                    <ul className="list-disc list-inside ml-4 mt-1">
+                      {record.diagnosis_info.other_diagnoses.map((diagnosis: any, index: number) => (
+                        <li key={index}>{diagnosis.diagnosis} ({diagnosis.disease_code})</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}
