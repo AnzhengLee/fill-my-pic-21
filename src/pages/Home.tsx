@@ -14,6 +14,7 @@ const Home = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [recognitionData, setRecognitionData] = useState<Record<string, any> | null>(null);
+  const [isAdminHovered, setIsAdminHovered] = useState(false);
 
   const handleRecognitionComplete = (data: Record<string, any>) => {
     setRecognitionData(data);
@@ -60,12 +61,28 @@ const Home = () => {
               <h1 className="text-3xl font-bold text-foreground">医疗信息识别系统</h1>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div 
+              className="relative flex items-center gap-3 min-w-[120px] min-h-[40px] justify-end"
+              onMouseEnter={() => setIsAdminHovered(true)}
+              onMouseLeave={() => setIsAdminHovered(false)}
+            >
+              {/* Subtle visual hint */}
+              <div className={`absolute right-0 top-1/2 transform -translate-y-1/2 transition-opacity duration-300 ${
+                isAdminHovered ? 'opacity-0' : 'opacity-30'
+              }`}>
+                <Shield className="w-4 h-4 text-muted-foreground" />
+              </div>
+              
+              {/* Admin button */}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => navigate("/admin-login")}
-                className="flex items-center gap-2"
+                className={`flex items-center gap-2 transition-all duration-300 ${
+                  isAdminHovered 
+                    ? 'opacity-100 pointer-events-auto translate-x-0' 
+                    : 'opacity-0 pointer-events-none translate-x-4'
+                }`}
               >
                 <Shield className="w-4 h-4" />
                 管理后台
