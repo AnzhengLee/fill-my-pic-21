@@ -199,12 +199,14 @@ export default function RecordDetail() {
               <CardTitle>入院信息</CardTitle>
             </CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-4">
-              <div><strong>入院方式:</strong> {record.admission_method}</div>
-              <div><strong>入院日期:</strong> {record.admission_date}</div>
-              <div><strong>入院科室:</strong> {record.admission_department}</div>
-              <div><strong>床号:</strong> {record.bed_number}</div>
-              <div><strong>出院日期:</strong> {record.discharge_date}</div>
-              <div><strong>实际住院天数:</strong> {record.actual_stay_days}天</div>
+              <div><strong>入院途径:</strong> {record.admission_method}</div>
+              <div><strong>入院时间:</strong> {record.admission_date}</div>
+              <div><strong>入院科别:</strong> {record.admission_department}</div>
+              <div><strong>病房:</strong> {record.bed_number}</div>
+              <div><strong>转科科别:</strong> -</div>
+              <div><strong>出院时间:</strong> {record.discharge_date}</div>
+              <div><strong>出院科别:</strong> -</div>
+              <div><strong>实际住院:</strong> {record.actual_stay_days}天</div>
             </CardContent>
           </Card>
 
