@@ -1,4 +1,4 @@
-import React, { useState, useImperativeHandle, forwardRef } from "react";
+import React, { useState, useImperativeHandle, forwardRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -269,6 +269,13 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
       }
     };
 
+    // 添加 useEffect 来处理 initialData 变化
+    useEffect(() => {
+      if (initialData) {
+        console.log('检测到 initialData 变化，开始填充表单:', initialData);
+        populateFormData(initialData);
+      }
+    }, [initialData]);
 
     const updateOtherDiagnosis = (index: number, field: keyof typeof otherDiagnoses[0], value: string) => {
       const newDiagnoses = [...otherDiagnoses];

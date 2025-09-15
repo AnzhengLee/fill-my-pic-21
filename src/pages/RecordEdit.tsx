@@ -58,10 +58,8 @@ export default function RecordEdit() {
       
       setRecord(data as any);
       
-      // Populate form with existing data
-      if (formRef.current) {
-        formRef.current.populateFormData(data);
-      }
+      // 数据将通过 initialData prop 传递给表单组件
+      console.log('获取到记录数据:', data);
     } catch (error) {
       console.error('Error fetching record:', error);
       toast({
