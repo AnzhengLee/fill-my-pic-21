@@ -138,15 +138,15 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
       formState: { errors },
     } = form;
 
-    // 渐进式数据填充函数
+    // 修复后的数据填充函数 - 正确处理数据库JSON结构
     const populateFormData = (data: Record<string, any>) => {
-      console.log('开始渐进式填充表单数据:', data);
+      console.log('开始填充表单数据:', data);
       
       try {
-        // 阶段1：基本信息填充
+        // 基本信息填充
         if (data.name) setValue('name', data.name);
         if (data.gender) setValue('gender', data.gender);
-        if (data.age) setValue('age', parseInt(data.age));
+        if (data.age) setValue('age', parseInt(String(data.age)));
         if (data.birth_date) {
           const date = new Date(data.birth_date);
           if (!isNaN(date.getTime())) {
@@ -164,94 +164,84 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
         if (data.phone) setValue('phone', data.phone);
         if (data.postal_code) setValue('postal_code', data.postal_code);
         if (data.household_address) setValue('household_address', data.household_address);
-         if (data.household_postal_code) setValue('household_postal_code', data.household_postal_code);
-        setValue('work_unit', data.work_unit || '-');
-        setValue('work_address', data.work_address || '-');
-        setValue('work_phone', data.work_phone || '-');
-        setValue('work_postal_code', data.work_postal_code || '-');
-        console.log('✓ 阶段1完成: 基本信息已填入');
+        if (data.household_postal_code) setValue('household_postal_code', data.household_postal_code);
+        if (data.work_unit) setValue('work_unit', data.work_unit);
+        if (data.work_address) setValue('work_address', data.work_address);
+        if (data.work_phone) setValue('work_phone', data.work_phone);
+        if (data.work_postal_code) setValue('work_postal_code', data.work_postal_code);
 
-        // 阶段2：联系人信息填充
+        // 联系人信息填充
         if (data.contact_name) setValue('contact_name', data.contact_name);
         if (data.contact_phone) setValue('contact_phone', data.contact_phone);
         if (data.contact_relationship) setValue('contact_relationship', data.contact_relationship);
         if (data.contact_address) setValue('contact_address', data.contact_address);
-        console.log('✓ 阶段2完成: 联系人信息已填入');
 
-        // 阶段3：入院信息填充
+        // 入院信息填充 - 修复字段名映射
         if (data.admission_department) setValue('admission_department', data.admission_department);
-        if (data.admission_ward) setValue('admission_ward', data.admission_ward);
-        if (data.admission_time) setValue('admission_time', data.admission_time);
-        if (data.admission_path) setValue('admission_path', data.admission_path);
+        if (data.bed_number) setValue('admission_ward', data.bed_number); // bed_number -> admission_ward
+        if (data.admission_date) setValue('admission_time', data.admission_date); // admission_date -> admission_time
+        if (data.admission_method) setValue('admission_path', data.admission_method); // admission_method -> admission_path
         if (data.transfer_department) setValue('transfer_department', data.transfer_department);
-        // console.log('✓ 阶段3完成: 入院信息已填入');
 
-        // 阶段4：出院信息填充
-        if (data.discharge_time) setValue('discharge_time', data.discharge_time);
+        // 出院信息填充 - 修复字段名映射
+        if (data.discharge_date) setValue('discharge_time', data.discharge_date); // discharge_date -> discharge_time
         if (data.discharge_department) setValue('discharge_department', data.discharge_department);
         if (data.discharge_ward) setValue('discharge_ward', data.discharge_ward);
-        if (data.actual_days) setValue('actual_days', data.actual_days);
-        // console.log('✓ 阶段4完成: 出院信息已填入');
+        if (data.actual_stay_days) setValue('actual_days', String(data.actual_stay_days)); // actual_stay_days -> actual_days
 
-        // 阶段5：主要诊断信息填充
-        if (data.outpatient_diagnosis) setValue('outpatient_diagnosis', data.outpatient_diagnosis);
-        if (data.main_diagnosis) setValue('main_diagnosis', data.main_diagnosis);
-        if (data.main_disease_code) setValue('main_disease_code', data.main_disease_code);
-        if (data.admission_condition) setValue('admission_condition', data.admission_condition);
-        // console.log('✓ 阶段5完成: 主要诊断信息已填入');
-
-        // 阶段6：病理信息填充
-        if (data.pathology_diagnosis) setValue('pathology_diagnosis', data.pathology_diagnosis);
-        if (data.disease_code) setValue('disease_code', data.disease_code);
-        if (data.pathology_number) setValue('pathology_number', data.pathology_number);
-        if (data.pathology_code) setValue('pathology_code', data.pathology_code);
-        if (data.drug_allergy) setValue('drug_allergy', data.drug_allergy);
-        if (data.allergy_drugs) setValue('allergy_drugs', data.allergy_drugs);
-        if (data.blood_type) setValue('blood_type', data.blood_type);
-        if (data.rh) setValue('rh', data.rh);
-        if (data.autopsy) setValue('autopsy', data.autopsy);
-        if (data.external_cause) setValue('external_cause', data.external_cause);
-        if (data.external_cause_code) setValue('external_cause_code', data.external_cause_code);
-        // console.log('✓ 阶段6完成: 病理信息已填入');
-
-        // 阶段7：医务人员信息填充
-        if (data.department_director) setValue('department_director', data.department_director);
-        if (data.attending_physician) setValue('attending_physician', data.attending_physician);
-        if (data.treating_physician) setValue('treating_physician', data.treating_physician);
-        if (data.resident_physician) setValue('resident_physician', data.resident_physician);
-        if (data.intern_physician) setValue('intern_physician', data.intern_physician);
-        if (data.fellow_physician) setValue('fellow_physician', data.fellow_physician);
-        if (data.responsible_nurse) setValue('responsible_nurse', data.responsible_nurse);
-        if (data.coder) setValue('coder', data.coder);
-        // console.log('✓ 阶段7完成: 医务人员信息已填入');
-
-        // 阶段8：质控信息填充
-        if (data.quality) setValue('quality', data.quality);
-        if (data.quality_physician) setValue('quality_physician', data.quality_physician);
-        if (data.quality_nurse) setValue('quality_nurse', data.quality_nurse);
-        if (data.quality_date) setValue('quality_date', data.quality_date);
-        // console.log('✓ 阶段8完成: 质控信息已填入');
-
-        // 阶段9：门急诊疾病编码填充
-        if (data.outpatient_disease_code) {
-          setValue('outpatient_disease_code', data.outpatient_disease_code);
-          // console.log('✓ 阶段9完成: 门急诊疾病编码已填入');
-        }
-
-        // 阶段10：其他诊断数据填充
-        if (data.other_diagnoses && Array.isArray(data.other_diagnoses)) {
-          const validDiagnoses = data.other_diagnoses.filter((d: any) => 
+        // 诊断信息填充 - 从 diagnosis_info JSON 中提取
+        const diagnosisInfo = data.diagnosis_info || {};
+        if (diagnosisInfo.outpatient_diagnosis) setValue('outpatient_diagnosis', diagnosisInfo.outpatient_diagnosis);
+        if (diagnosisInfo.outpatient_disease_code) setValue('outpatient_disease_code', diagnosisInfo.outpatient_disease_code);
+        if (diagnosisInfo.main_diagnosis) setValue('main_diagnosis', diagnosisInfo.main_diagnosis);
+        if (diagnosisInfo.main_disease_code) setValue('main_disease_code', diagnosisInfo.main_disease_code);
+        if (diagnosisInfo.admission_condition) setValue('admission_condition', diagnosisInfo.admission_condition);
+        
+        // 其他诊断数据填充
+        if (diagnosisInfo.other_diagnoses && Array.isArray(diagnosisInfo.other_diagnoses)) {
+          const validDiagnoses = diagnosisInfo.other_diagnoses.filter((d: any) => 
             d.diagnosis || d.disease_code || d.admission_condition
           );
           if (validDiagnoses.length > 0) {
             setOtherDiagnoses(validDiagnoses);
-            // console.log('✓ 阶段10完成: 其他诊断数据已填入');
           }
         }
 
+        // 病理信息填充 - 从 pathology_info JSON 中提取
+        const pathologyInfo = data.pathology_info || {};
+        if (pathologyInfo.pathology_diagnosis) setValue('pathology_diagnosis', pathologyInfo.pathology_diagnosis);
+        if (pathologyInfo.disease_code) setValue('disease_code', pathologyInfo.disease_code);
+        if (pathologyInfo.pathology_number) setValue('pathology_number', pathologyInfo.pathology_number);
+        if (pathologyInfo.pathology_code) setValue('pathology_code', pathologyInfo.pathology_code);
+        if (pathologyInfo.drug_allergy) setValue('drug_allergy', pathologyInfo.drug_allergy);
+        if (pathologyInfo.allergy_drugs) setValue('allergy_drugs', pathologyInfo.allergy_drugs);
+        if (pathologyInfo.blood_type) setValue('blood_type', pathologyInfo.blood_type);
+        if (pathologyInfo.rh) setValue('rh', pathologyInfo.rh);
+        if (pathologyInfo.autopsy) setValue('autopsy', pathologyInfo.autopsy);
+        if (pathologyInfo.external_cause) setValue('external_cause', pathologyInfo.external_cause);
+        if (pathologyInfo.external_cause_code) setValue('external_cause_code', pathologyInfo.external_cause_code);
+
+        // 医务人员信息填充 - 从 medical_personnel JSON 中提取
+        const medicalPersonnel = data.medical_personnel || {};
+        if (medicalPersonnel.department_director) setValue('department_director', medicalPersonnel.department_director);
+        if (medicalPersonnel.attending_physician) setValue('attending_physician', medicalPersonnel.attending_physician);
+        if (medicalPersonnel.treating_physician) setValue('treating_physician', medicalPersonnel.treating_physician);
+        if (medicalPersonnel.resident_physician) setValue('resident_physician', medicalPersonnel.resident_physician);
+        if (medicalPersonnel.intern_physician) setValue('intern_physician', medicalPersonnel.intern_physician);
+        if (medicalPersonnel.fellow_physician) setValue('fellow_physician', medicalPersonnel.fellow_physician);
+        if (medicalPersonnel.responsible_nurse) setValue('responsible_nurse', medicalPersonnel.responsible_nurse);
+        if (medicalPersonnel.coder) setValue('coder', medicalPersonnel.coder);
+
+        // 质控信息填充 - 从 quality_control JSON 中提取
+        const qualityControl = data.quality_control || {};
+        if (qualityControl.quality) setValue('quality', qualityControl.quality);
+        if (qualityControl.quality_physician) setValue('quality_physician', qualityControl.quality_physician);
+        if (qualityControl.quality_nurse) setValue('quality_nurse', qualityControl.quality_nurse);
+        if (qualityControl.quality_date) setValue('quality_date', qualityControl.quality_date);
+
         toast({
-          title: "数据填充完成",
-          description: "已成功将识别的数据填入表单",
+          title: "数据填充成功",
+          description: "已成功将医疗记录数据加载到表单中",
         });
 
       } catch (error) {
