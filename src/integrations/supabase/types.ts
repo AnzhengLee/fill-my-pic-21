@@ -120,6 +120,7 @@ export type Database = {
           id: string
           role: Database["public"]["Enums"]["user_role"]
           updated_at: string | null
+          username: string | null
         }
         Insert: {
           created_at?: string | null
@@ -127,6 +128,7 @@ export type Database = {
           id: string
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string | null
+          username?: string | null
         }
         Update: {
           created_at?: string | null
@@ -134,6 +136,7 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string | null
+          username?: string | null
         }
         Relationships: []
       }
@@ -142,6 +145,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_email_by_username: {
+        Args: { input_username: string }
+        Returns: string
+      }
       is_admin: {
         Args: { user_id?: string }
         Returns: boolean

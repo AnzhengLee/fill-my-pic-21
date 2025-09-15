@@ -6,6 +6,7 @@ interface Profile {
   id: string;
   email: string;
   role: 'admin' | 'user';
+  username?: string;
 }
 
 interface AuthContextType {
@@ -66,12 +67,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
+  const signIn = async (emailOrUsername: string, password: string) => {
+    try {
+      // Check if input looks like an email or username
+      let emailToUse = emailOrUsername;
+      
+      // If it doesn't contain @ symbol, treat as username and convert to email
+      if (!emailOrUsername.includes('@')) {
+        // Map common usernames to their email equivalents
+        const usernameToEmailMap: { [key: string]: string } = {
+          'admin': 'admin@system.local'
+        };
+        
+        emailToUse = usernameToEmailMap[emailOrUsername] || emailOrUsername;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email: emailToUse,
+        password,
+      });
+      return { error };
+    } catch (error: any) {
+      return { error };
+    }
   };
 
   const signOut = async () => {

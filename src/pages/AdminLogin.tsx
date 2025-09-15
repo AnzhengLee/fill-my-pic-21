@@ -59,7 +59,7 @@ export default function AdminLogin() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">邮箱</Label>
+              <Label htmlFor="email">用户名</Label>
               <Input
                 id="email"
                 type="text"

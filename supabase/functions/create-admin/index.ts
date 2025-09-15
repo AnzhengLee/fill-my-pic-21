@@ -27,9 +27,9 @@ serve(async (req) => {
 
     console.log('Creating admin user...');
 
-    // Create admin user
+    // Create admin user with valid email format
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email: 'admin',
+      email: 'admin@system.local',
       password: 'admin123',
       email_confirm: true
     });
@@ -41,10 +41,13 @@ serve(async (req) => {
 
     console.log('Admin user created:', authData.user?.id);
 
-    // Update the profile to set admin role
+    // Update the profile to set admin role and username
     const { error: profileError } = await supabaseAdmin
       .from('profiles')
-      .update({ role: 'admin' })
+      .update({ 
+        role: 'admin',
+        username: 'admin'
+      })
       .eq('id', authData.user.id);
 
     if (profileError) {
