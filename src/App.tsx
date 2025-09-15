@@ -9,6 +9,7 @@ import RecordList from "./pages/RecordList";
 import AdminLogin from "./pages/AdminLogin";
 import AdminSetupPage from "./pages/AdminSetup";
 import RecordDetail from "./pages/RecordDetail";
+import RecordEdit from "./pages/RecordEdit";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -38,6 +39,14 @@ const App = () => (
               element={
                 <ProtectedRoute requireAdmin>
                   <RecordDetail />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/records/:id/edit" 
+              element={
+                <ProtectedRoute requireAdmin>
+                  <RecordEdit />
                 </ProtectedRoute>
               } 
             />

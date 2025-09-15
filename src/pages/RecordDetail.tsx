@@ -174,7 +174,10 @@ export default function RecordDetail() {
             返回记录列表
           </Button>
           <div className="space-x-2">
-            <Button variant="outline">
+            <Button 
+              variant="outline"
+              onClick={() => navigate(`/records/${id}/edit`)}
+            >
               <Edit className="mr-2 h-4 w-4" />
               编辑
             </Button>
