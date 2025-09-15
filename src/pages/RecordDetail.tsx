@@ -59,10 +59,23 @@ export default function RecordDetail() {
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    if (id) {
+    if (id && isValidUUID(id)) {
       fetchRecord();
+    } else {
+      toast({
+        title: "无效的记录ID",
+        description: "请从记录列表中选择有效的记录",
+        variant: "destructive",
+      });
+      navigate('/records');
+      setLoading(false);
     }
   }, [id]);
+
+  const isValidUUID = (uuid: string) => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+  };
 
   const fetchRecord = async () => {
     try {
@@ -70,14 +83,26 @@ export default function RecordDetail() {
         .from('medical_records')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      
+      if (!data) {
+        toast({
+          title: "记录不存在",
+          description: "未找到指定的医疗记录",
+          variant: "destructive",
+        });
+        navigate('/records');
+        return;
+      }
+      
       setRecord(data);
     } catch (error) {
+      console.error('Error fetching record:', error);
       toast({
         title: "加载失败",
-        description: "无法加载记录详情",
+        description: "无法加载记录详情，请稍后重试",
         variant: "destructive",
       });
       navigate('/records');
