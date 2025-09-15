@@ -28,8 +28,12 @@ interface MedicalRecord {
   phone: string;
   postal_code: string;
   work_unit: string;
+  work_address?: string;
   work_phone: string;
   work_postal_code: string;
+  contact_name?: string;
+  contact_relationship?: string;
+  contact_phone?: string;
   admission_method: string;
   admission_date: string;
   admission_department: string;
@@ -204,6 +208,17 @@ export default function RecordDetail() {
             </CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-4">
               <div><strong>现住址:</strong> {record.current_address || '-'}</div>
+              <div><strong>电话:</strong> {record.phone || '-'}</div>
+              <div><strong>邮编:</strong> {record.postal_code || '-'}</div>
+              <div><strong>户口地址:</strong> {record.household_address || '-'}</div>
+              <div><strong>邮编（户口）:</strong> {record.household_postal_code || '-'}</div>
+              <div><strong>工作单位及地址:</strong> {record.work_unit ? `${record.work_unit}${record.work_address ? ` - ${record.work_address}` : ''}` : '-'}</div>
+              <div><strong>单位电话:</strong> {record.work_phone || '-'}</div>
+              <div><strong>邮编（单位）:</strong> {record.work_postal_code || '-'}</div>
+              <div><strong>联系人姓名:</strong> {record.contact_name || '-'}</div>
+              <div><strong>关系:</strong> {record.contact_relationship || '-'}</div>
+              <div><strong>地址（联系人）:</strong> {record.contact_address || '-'}</div>
+              <div><strong>电话（联系人）:</strong> {record.contact_phone || '-'}</div>
             </CardContent>
           </Card>
 

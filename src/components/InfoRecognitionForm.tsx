@@ -38,6 +38,7 @@ const formSchema = z.object({
   household_address: z.string().optional(),
   household_postal_code: z.string().optional(),
   work_unit: z.string().optional(),
+  work_address: z.string().optional(),
   work_phone: z.string().optional(),
   work_postal_code: z.string().optional(),
   
@@ -165,6 +166,7 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
         if (data.household_address) setValue('household_address', data.household_address);
          if (data.household_postal_code) setValue('household_postal_code', data.household_postal_code);
         setValue('work_unit', data.work_unit || '-');
+        setValue('work_address', data.work_address || '-');
         setValue('work_phone', data.work_phone || '-');
         setValue('work_postal_code', data.work_postal_code || '-');
         console.log('✓ 阶段1完成: 基本信息已填入');
@@ -316,8 +318,12 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
           phone: data.phone || '',
           postal_code: data.postal_code || '',
           work_unit: data.work_unit || '',
+          work_address: data.work_address || '',
           work_phone: data.work_phone || '',
           work_postal_code: data.work_postal_code || '',
+          contact_name: data.contact_name || '',
+          contact_relationship: data.contact_relationship || '',
+          contact_phone: data.contact_phone || '',
           admission_method: data.admission_path || '',
           admission_date: data.admission_time || '',
           admission_department: data.admission_department || '',
@@ -533,8 +539,12 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
                   <Input id="household_postal_code" {...register("household_postal_code")} />
                 </div>
                 <div>
-                  <Label htmlFor="work_unit">工作单位及地址</Label>
-                  <Textarea id="work_unit" {...register("work_unit")} />
+                  <Label htmlFor="work_unit">工作单位</Label>
+                  <Input id="work_unit" {...register("work_unit")} />
+                </div>
+                <div>
+                  <Label htmlFor="work_address">工作单位地址</Label>
+                  <Textarea id="work_address" {...register("work_address")} />
                 </div>
                 <div>
                   <Label htmlFor="work_phone">单位电话</Label>
