@@ -251,11 +251,20 @@ export default function RecordDetail() {
                 <CardTitle>病理信息</CardTitle>
               </CardHeader>
               <CardContent className="grid md:grid-cols-2 gap-4">
-                {record.pathology_info.blood_type && (
-                  <div><strong>血型:</strong> {record.pathology_info.blood_type}</div>
+                {record.pathology_info.external_cause && (
+                  <div><strong>损伤、中毒的外部原因:</strong> {record.pathology_info.external_cause}</div>
                 )}
-                {record.pathology_info.rh && (
-                  <div><strong>Rh:</strong> {record.pathology_info.rh}</div>
+                {record.pathology_info.external_cause_code && (
+                  <div><strong>外因编码:</strong> {record.pathology_info.external_cause_code}</div>
+                )}
+                {record.pathology_info.pathology_diagnosis && (
+                  <div><strong>病理诊断:</strong> {record.pathology_info.pathology_diagnosis}</div>
+                )}
+                {record.pathology_info.pathology_code && (
+                  <div><strong>病理疾病编码:</strong> {record.pathology_info.pathology_code}</div>
+                )}
+                {record.pathology_info.pathology_number && (
+                  <div><strong>病理号:</strong> {record.pathology_info.pathology_number}</div>
                 )}
                 {record.pathology_info.drug_allergy && (
                   <div><strong>药物过敏:</strong> {record.pathology_info.drug_allergy}</div>
@@ -263,23 +272,14 @@ export default function RecordDetail() {
                 {record.pathology_info.allergy_drugs && (
                   <div><strong>过敏药物:</strong> {record.pathology_info.allergy_drugs}</div>
                 )}
-                {record.pathology_info.pathology_diagnosis && (
-                  <div><strong>病理诊断:</strong> {record.pathology_info.pathology_diagnosis}</div>
-                )}
-                {record.pathology_info.pathology_number && (
-                  <div><strong>病理号:</strong> {record.pathology_info.pathology_number}</div>
-                )}
-                {record.pathology_info.pathology_code && (
-                  <div><strong>病理代码:</strong> {record.pathology_info.pathology_code}</div>
-                )}
-                {record.pathology_info.external_cause && (
-                  <div><strong>外因:</strong> {record.pathology_info.external_cause}</div>
-                )}
-                {record.pathology_info.external_cause_code && (
-                  <div><strong>外因代码:</strong> {record.pathology_info.external_cause_code}</div>
-                )}
                 {record.pathology_info.autopsy && (
-                  <div><strong>尸检:</strong> {record.pathology_info.autopsy}</div>
+                  <div><strong>死亡患者尸检:</strong> {record.pathology_info.autopsy}</div>
+                )}
+                {record.pathology_info.blood_type && (
+                  <div><strong>血型:</strong> {record.pathology_info.blood_type}</div>
+                )}
+                {record.pathology_info.rh && (
+                  <div><strong>Rh:</strong> {record.pathology_info.rh}</div>
                 )}
               </CardContent>
             </Card>
