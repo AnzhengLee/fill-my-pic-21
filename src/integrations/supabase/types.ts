@@ -25,6 +25,9 @@ export type Database = {
           birth_date: string
           birth_place: string
           contact_address: string
+          contact_name: string | null
+          contact_phone: string | null
+          contact_relationship: string | null
           created_at: string
           current_address: string | null
           diagnosis_info: Json | null
@@ -50,6 +53,7 @@ export type Database = {
           transfer_department: string | null
           updated_at: string
           user_id: string | null
+          work_address: string | null
           work_phone: string | null
           work_postal_code: string | null
           work_unit: string
@@ -64,6 +68,9 @@ export type Database = {
           birth_date: string
           birth_place: string
           contact_address: string
+          contact_name?: string | null
+          contact_phone?: string | null
+          contact_relationship?: string | null
           created_at?: string
           current_address?: string | null
           diagnosis_info?: Json | null
@@ -89,6 +96,7 @@ export type Database = {
           transfer_department?: string | null
           updated_at?: string
           user_id?: string | null
+          work_address?: string | null
           work_phone?: string | null
           work_postal_code?: string | null
           work_unit: string
@@ -103,6 +111,9 @@ export type Database = {
           birth_date?: string
           birth_place?: string
           contact_address?: string
+          contact_name?: string | null
+          contact_phone?: string | null
+          contact_relationship?: string | null
           created_at?: string
           current_address?: string | null
           diagnosis_info?: Json | null
@@ -128,6 +139,7 @@ export type Database = {
           transfer_department?: string | null
           updated_at?: string
           user_id?: string | null
+          work_address?: string | null
           work_phone?: string | null
           work_postal_code?: string | null
           work_unit?: string
