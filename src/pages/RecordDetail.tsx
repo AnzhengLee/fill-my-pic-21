@@ -185,11 +185,11 @@ export default function RecordDetail() {
             <CardContent className="grid md:grid-cols-2 gap-4">
               <div><strong>姓名:</strong> {record.name}</div>
               <div><strong>性别:</strong> {record.gender}</div>
-              <div><strong>年龄:</strong> {record.age}</div>
               <div><strong>出生日期:</strong> {record.birth_date}</div>
+              <div><strong>年龄:</strong> {record.age}</div>
+              <div><strong>国籍:</strong> {record.nationality}</div>
               <div><strong>出生地:</strong> {record.birth_place}</div>
               <div><strong>籍贯:</strong> {record.native_place}</div>
-              <div><strong>国籍:</strong> {record.nationality}</div>
               <div><strong>民族:</strong> {record.ethnicity}</div>
               <div><strong>身份证号:</strong> {record.id_number}</div>
               <div><strong>职业:</strong> {record.occupation}</div>
