@@ -285,42 +285,67 @@ export default function RecordDetail() {
           )}
 
           {/* 医务人员 */}
-          {record.medical_personnel && (
-            <Card>
-              <CardHeader>
-                <CardTitle>医务人员</CardTitle>
-              </CardHeader>
-              <CardContent className="grid md:grid-cols-2 gap-4">
-                {record.medical_personnel.department_director && (
-                  <div><strong>科主任:</strong> {record.medical_personnel.department_director}</div>
-                )}
-                {record.medical_personnel.attending_physician && (
-                  <div><strong>主任（副主任）医师:</strong> {record.medical_personnel.attending_physician}</div>
-                )}
-                {record.medical_personnel.treating_physician && (
-                  <div><strong>主治医师:</strong> {record.medical_personnel.treating_physician}</div>
-                )}
-                {record.medical_personnel.resident_physician && (
-                  <div><strong>住院医师:</strong> {record.medical_personnel.resident_physician}</div>
-                )}
-                {record.medical_personnel.intern_physician && (
-                  <div><strong>实习医师:</strong> {record.medical_personnel.intern_physician}</div>
-                )}
-                {record.medical_personnel.responsible_nurse && (
-                  <div><strong>责任护士:</strong> {record.medical_personnel.responsible_nurse}</div>
-                )}
-                {record.medical_personnel.fellow_physician && (
-                  <div><strong>进修医师:</strong> {record.medical_personnel.fellow_physician}</div>
-                )}
-                {record.medical_personnel.medical_student && (
-                  <div><strong>医学生:</strong> {record.medical_personnel.medical_student}</div>
-                )}
-                {record.medical_personnel.coder && (
-                  <div><strong>编码员:</strong> {record.medical_personnel.coder}</div>
-                )}
-              </CardContent>
-            </Card>
-          )}
+          <Card>
+            <CardHeader>
+              <CardTitle>医务人员</CardTitle>
+            </CardHeader>
+            <CardContent className="grid md:grid-cols-2 gap-4">
+              <div>
+                <strong>科主任:</strong> 
+                <span className={record.medical_personnel?.department_director ? "" : "text-muted-foreground"}>
+                  {record.medical_personnel?.department_director || "未分配"}
+                </span>
+              </div>
+              <div>
+                <strong>主任（副主任）医师:</strong> 
+                <span className={record.medical_personnel?.attending_physician ? "" : "text-muted-foreground"}>
+                  {record.medical_personnel?.attending_physician || "未分配"}
+                </span>
+              </div>
+              <div>
+                <strong>主治医师:</strong> 
+                <span className={record.medical_personnel?.treating_physician ? "" : "text-muted-foreground"}>
+                  {record.medical_personnel?.treating_physician || "未分配"}
+                </span>
+              </div>
+              <div>
+                <strong>住院医师:</strong> 
+                <span className={record.medical_personnel?.resident_physician ? "" : "text-muted-foreground"}>
+                  {record.medical_personnel?.resident_physician || "未分配"}
+                </span>
+              </div>
+              <div>
+                <strong>进修医师:</strong> 
+                <span className={record.medical_personnel?.fellow_physician ? "" : "text-muted-foreground"}>
+                  {record.medical_personnel?.fellow_physician || "未分配"}
+                </span>
+              </div>
+              <div>
+                <strong>实习医师:</strong> 
+                <span className={record.medical_personnel?.intern_physician ? "" : "text-muted-foreground"}>
+                  {record.medical_personnel?.intern_physician || "未分配"}
+                </span>
+              </div>
+              <div>
+                <strong>医学生:</strong> 
+                <span className={record.medical_personnel?.medical_student ? "" : "text-muted-foreground"}>
+                  {record.medical_personnel?.medical_student || "未分配"}
+                </span>
+              </div>
+              <div>
+                <strong>责任护士:</strong> 
+                <span className={record.medical_personnel?.responsible_nurse ? "" : "text-muted-foreground"}>
+                  {record.medical_personnel?.responsible_nurse || "未分配"}
+                </span>
+              </div>
+              <div>
+                <strong>编码员:</strong> 
+                <span className={record.medical_personnel?.coder ? "" : "text-muted-foreground"}>
+                  {record.medical_personnel?.coder || "未分配"}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* 质控信息 */}
           {record.quality_control && (
