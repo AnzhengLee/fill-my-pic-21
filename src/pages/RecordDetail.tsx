@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -102,7 +103,7 @@ export default function RecordDetail() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('zh-CN');
+    return format(new Date(dateString), 'yyyy/M/d HH:mm:ss');
   };
 
   if (loading) {
