@@ -293,55 +293,49 @@ export default function RecordDetail() {
               <div>
                 <strong>科主任:</strong> 
                 <span className={record.medical_personnel?.department_director ? "" : "text-muted-foreground"}>
-                  {record.medical_personnel?.department_director || "未分配"}
+                  {record.medical_personnel?.department_director || "-"}
                 </span>
               </div>
               <div>
                 <strong>主任（副主任）医师:</strong> 
                 <span className={record.medical_personnel?.attending_physician ? "" : "text-muted-foreground"}>
-                  {record.medical_personnel?.attending_physician || "未分配"}
+                  {record.medical_personnel?.attending_physician || "-"}
                 </span>
               </div>
               <div>
                 <strong>主治医师:</strong> 
                 <span className={record.medical_personnel?.treating_physician ? "" : "text-muted-foreground"}>
-                  {record.medical_personnel?.treating_physician || "未分配"}
-                </span>
-              </div>
-              <div>
-                <strong>住院医师:</strong> 
-                <span className={record.medical_personnel?.resident_physician ? "" : "text-muted-foreground"}>
-                  {record.medical_personnel?.resident_physician || "未分配"}
-                </span>
-              </div>
-              <div>
-                <strong>进修医师:</strong> 
-                <span className={record.medical_personnel?.fellow_physician ? "" : "text-muted-foreground"}>
-                  {record.medical_personnel?.fellow_physician || "未分配"}
+                  {record.medical_personnel?.treating_physician || "-"}
                 </span>
               </div>
               <div>
                 <strong>实习医师:</strong> 
                 <span className={record.medical_personnel?.intern_physician ? "" : "text-muted-foreground"}>
-                  {record.medical_personnel?.intern_physician || "未分配"}
+                  {record.medical_personnel?.intern_physician || "-"}
                 </span>
               </div>
               <div>
-                <strong>医学生:</strong> 
-                <span className={record.medical_personnel?.medical_student ? "" : "text-muted-foreground"}>
-                  {record.medical_personnel?.medical_student || "未分配"}
+                <strong>住院医师:</strong> 
+                <span className={record.medical_personnel?.resident_physician ? "" : "text-muted-foreground"}>
+                  {record.medical_personnel?.resident_physician || "-"}
                 </span>
               </div>
               <div>
                 <strong>责任护士:</strong> 
                 <span className={record.medical_personnel?.responsible_nurse ? "" : "text-muted-foreground"}>
-                  {record.medical_personnel?.responsible_nurse || "未分配"}
+                  {record.medical_personnel?.responsible_nurse || "-"}
+                </span>
+              </div>
+              <div>
+                <strong>进修医师:</strong> 
+                <span className={record.medical_personnel?.fellow_physician ? "" : "text-muted-foreground"}>
+                  {record.medical_personnel?.fellow_physician || "-"}
                 </span>
               </div>
               <div>
                 <strong>编码员:</strong> 
                 <span className={record.medical_personnel?.coder ? "" : "text-muted-foreground"}>
-                  {record.medical_personnel?.coder || "未分配"}
+                  {record.medical_personnel?.coder || "-"}
                 </span>
               </div>
             </CardContent>
