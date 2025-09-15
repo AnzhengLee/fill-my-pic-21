@@ -204,14 +204,6 @@ export default function RecordDetail() {
             </CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-4">
               <div><strong>现住址:</strong> {record.current_address || '-'}</div>
-              <div><strong>户口地址:</strong> {record.household_address || '-'}</div>
-              <div><strong>户口邮编:</strong> {record.household_postal_code || '-'}</div>
-              <div><strong>联系地址:</strong> {record.contact_address}</div>
-              <div><strong>电话:</strong> {record.phone}</div>
-              <div><strong>邮编:</strong> {record.postal_code}</div>
-              <div><strong>工作单位:</strong> {record.work_unit}</div>
-              <div><strong>单位电话:</strong> {record.work_phone || '-'}</div>
-              <div><strong>单位邮编:</strong> {record.work_postal_code || '-'}</div>
             </CardContent>
           </Card>
 
