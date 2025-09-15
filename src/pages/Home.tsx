@@ -64,20 +64,11 @@ const Home = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigate("/admin-setup")}
-                className="flex items-center gap-2 mr-2"
-              >
-                <Shield className="w-4 h-4" />
-                创建管理员
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
                 onClick={() => navigate("/admin-login")}
                 className="flex items-center gap-2"
               >
                 <Shield className="w-4 h-4" />
-                管理员登录
+                管理后台
               </Button>
             </div>
           </div>
