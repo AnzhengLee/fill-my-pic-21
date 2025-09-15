@@ -390,9 +390,13 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
           throw error;
         }
 
+        // 保存成功后重置表单
+        form.reset();
+        setOtherDiagnoses([]);
+        
         toast({
           title: "保存成功",
-          description: "医疗记录已成功保存到数据库",
+          description: "医疗记录已成功保存到数据库，表单已清空",
         });
 
         onSubmit(formData);

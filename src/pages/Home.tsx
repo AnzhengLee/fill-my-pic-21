@@ -33,6 +33,10 @@ const Home = () => {
     try {
       // Form submission will be handled in the InfoRecognitionForm component
       console.log("Form data:", data);
+      
+      // 清空识别数据状态
+      setRecognitionData(null);
+      
       toast({
         title: "保存成功",
         description: "医疗信息记录已成功保存",
