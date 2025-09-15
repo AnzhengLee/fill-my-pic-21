@@ -26,12 +26,15 @@ export type Database = {
           birth_place: string
           contact_address: string
           created_at: string
+          current_address: string | null
           diagnosis_info: Json | null
           discharge_date: string
           discharge_department: string | null
           discharge_ward: string | null
           ethnicity: string
           gender: string
+          household_address: string | null
+          household_postal_code: string | null
           id: string
           id_number: string
           marital_status: string
@@ -47,6 +50,8 @@ export type Database = {
           transfer_department: string | null
           updated_at: string
           user_id: string | null
+          work_phone: string | null
+          work_postal_code: string | null
           work_unit: string
         }
         Insert: {
@@ -60,12 +65,15 @@ export type Database = {
           birth_place: string
           contact_address: string
           created_at?: string
+          current_address?: string | null
           diagnosis_info?: Json | null
           discharge_date: string
           discharge_department?: string | null
           discharge_ward?: string | null
           ethnicity: string
           gender: string
+          household_address?: string | null
+          household_postal_code?: string | null
           id?: string
           id_number: string
           marital_status: string
@@ -81,6 +89,8 @@ export type Database = {
           transfer_department?: string | null
           updated_at?: string
           user_id?: string | null
+          work_phone?: string | null
+          work_postal_code?: string | null
           work_unit: string
         }
         Update: {
@@ -94,12 +104,15 @@ export type Database = {
           birth_place?: string
           contact_address?: string
           created_at?: string
+          current_address?: string | null
           diagnosis_info?: Json | null
           discharge_date?: string
           discharge_department?: string | null
           discharge_ward?: string | null
           ethnicity?: string
           gender?: string
+          household_address?: string | null
+          household_postal_code?: string | null
           id?: string
           id_number?: string
           marital_status?: string
@@ -115,6 +128,8 @@ export type Database = {
           transfer_department?: string | null
           updated_at?: string
           user_id?: string | null
+          work_phone?: string | null
+          work_postal_code?: string | null
           work_unit?: string
         }
         Relationships: []
