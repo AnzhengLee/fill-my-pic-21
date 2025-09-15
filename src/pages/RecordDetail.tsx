@@ -29,7 +29,9 @@ interface MedicalRecord {
   admission_date: string;
   admission_department: string;
   bed_number: string;
+  transfer_department?: string;
   discharge_date: string;
+  discharge_department?: string;
   actual_stay_days: number;
   diagnosis_info: any;
   pathology_info: any;
@@ -203,9 +205,9 @@ export default function RecordDetail() {
               <div><strong>入院时间:</strong> {record.admission_date}</div>
               <div><strong>入院科别:</strong> {record.admission_department}</div>
               <div><strong>病房:</strong> {record.bed_number}</div>
-              <div><strong>转科科别:</strong> -</div>
+              <div><strong>转科科别:</strong> {record.transfer_department || '-'}</div>
               <div><strong>出院时间:</strong> {record.discharge_date}</div>
-              <div><strong>出院科别:</strong> -</div>
+              <div><strong>出院科别:</strong> {record.discharge_department || '-'}</div>
               <div><strong>实际住院:</strong> {record.actual_stay_days}天</div>
             </CardContent>
           </Card>

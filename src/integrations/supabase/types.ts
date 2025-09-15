@@ -28,6 +28,7 @@ export type Database = {
           created_at: string
           diagnosis_info: Json | null
           discharge_date: string
+          discharge_department: string | null
           ethnicity: string
           gender: string
           id: string
@@ -42,6 +43,7 @@ export type Database = {
           phone: string
           postal_code: string
           quality_control: Json | null
+          transfer_department: string | null
           updated_at: string
           user_id: string | null
           work_unit: string
@@ -59,6 +61,7 @@ export type Database = {
           created_at?: string
           diagnosis_info?: Json | null
           discharge_date: string
+          discharge_department?: string | null
           ethnicity: string
           gender: string
           id?: string
@@ -73,6 +76,7 @@ export type Database = {
           phone: string
           postal_code: string
           quality_control?: Json | null
+          transfer_department?: string | null
           updated_at?: string
           user_id?: string | null
           work_unit: string
@@ -90,6 +94,7 @@ export type Database = {
           created_at?: string
           diagnosis_info?: Json | null
           discharge_date?: string
+          discharge_department?: string | null
           ethnicity?: string
           gender?: string
           id?: string
@@ -104,6 +109,7 @@ export type Database = {
           phone?: string
           postal_code?: string
           quality_control?: Json | null
+          transfer_department?: string | null
           updated_at?: string
           user_id?: string | null
           work_unit?: string
