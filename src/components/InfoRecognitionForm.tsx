@@ -320,6 +320,7 @@ export const InfoRecognitionForm = forwardRef<FormRef, InfoRecognitionFormProps>
           transfer_department: data.transfer_department || '',
           discharge_date: data.discharge_time || '',
           discharge_department: data.discharge_department || '',
+          discharge_ward: data.discharge_ward || '',
           actual_stay_days: data.actual_days ? parseInt(data.actual_days.replace(/[^\d]/g, '')) || 0 : 0,
           
           // 诊断信息 (JSONB)
