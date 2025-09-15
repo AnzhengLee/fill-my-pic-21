@@ -235,7 +235,12 @@ export default function RecordDetail() {
                     <strong>其他诊断:</strong>
                     <ul className="list-disc list-inside ml-4 mt-1">
                       {record.diagnosis_info.other_diagnoses.map((diagnosis: any, index: number) => (
-                        <li key={index}>{diagnosis.diagnosis} ({diagnosis.disease_code})</li>
+                        <li key={index}>
+                          {diagnosis.diagnosis} ({diagnosis.disease_code})
+                          {diagnosis.admission_condition && (
+                            <span> - 入院病情：{diagnosis.admission_condition}</span>
+                          )}
+                        </li>
                       ))}
                     </ul>
                   </div>
