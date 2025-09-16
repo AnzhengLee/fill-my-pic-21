@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Save, FileText, List, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { InfoRecognitionForm, FormRef } from "@/components/InfoRecognitionForm";
-import ImageUploader from "@/components/ImageUploader";
+import BatchImageUploader from "@/components/BatchImageUploader";
 import { useToast } from "@/hooks/use-toast";
 
 const Home = () => {
@@ -99,8 +99,8 @@ const Home = () => {
           </p>
         </div>
 
-        {/* Image Upload Card */}
-        <ImageUploader
+        {/* Batch Image Upload Card */}
+        <BatchImageUploader
           onRecognitionComplete={handleRecognitionComplete}
           isProcessing={isProcessing}
           setIsProcessing={setIsProcessing}
