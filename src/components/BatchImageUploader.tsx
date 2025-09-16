@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Upload, FileImage, X, CheckCircle, AlertCircle, Play, Trash2 } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Badge } from '@/components/ui/badge';
+import { Upload, FileImage, X, CheckCircle, AlertCircle, Play, Trash2, ChevronDown, ChevronUp, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface RecognitionResult {
@@ -245,14 +247,65 @@ const BatchImageUploader: React.FC<BatchImageUploaderProps> = ({
     });
   };
 
+  // 获取关键字段的预览信息
+  const getKeyFields = (result: RecognitionResult) => {
+    const keyFields = ['姓名', '性别', '年龄', '主要诊断', '入院时间', '出院时间'];
+    const foundFields: { key: string; value: any }[] = [];
+    
+    const extractValue = (obj: any, path: string): any => {
+      if (typeof obj !== 'object' || obj === null) return obj;
+      
+      // 直接查找
+      if (obj[path]) return obj[path];
+      
+      // 在嵌套对象中查找
+      for (const [key, value] of Object.entries(obj)) {
+        if (typeof value === 'object' && value !== null) {
+          const nestedResult = extractValue(value, path);
+          if (nestedResult) return nestedResult;
+        }
+      }
+      return null;
+    };
+
+    keyFields.forEach(field => {
+      const value = extractValue(result, field);
+      if (value && value !== '') {
+        foundFields.push({ key: field, value });
+      }
+    });
+
+    return foundFields;
+  };
+
+  // 计算数据质量
+  const getDataQuality = (result: RecognitionResult) => {
+    const totalKeys = Object.keys(result).length;
+    const filledKeys = Object.values(result).filter(value => 
+      value && value !== '' && value !== null && value !== undefined
+    ).length;
+    
+    const fillRate = totalKeys > 0 ? Math.round((filledKeys / totalKeys) * 100) : 0;
+    const keyFields = getKeyFields(result);
+    
+    return {
+      totalFields: totalKeys,
+      filledFields: filledKeys,
+      fillRate,
+      keyFieldsCount: keyFields.length,
+      hasKeyInfo: keyFields.length >= 3
+    };
+  };
+
   return (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Upload className="w-5 h-5" />
-          批量图片上传与识别（最多5张）
-        </CardTitle>
-      </CardHeader>
+    <>
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Upload className="w-5 h-5" />
+            批量图片上传与识别（最多5张）
+          </CardTitle>
+        </CardHeader>
       <CardContent className="space-y-6">
         {/* 上传区域 */}
         <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
@@ -365,40 +418,13 @@ const BatchImageUploader: React.FC<BatchImageUploaderProps> = ({
                     )}
                   </div>
 
-                  {/* 识别结果预览 */}
+                   {/* 识别结果预览 */}
                   {image.status === 'completed' && image.recognitionResult && (
-                    <div className="space-y-2">
-                      <div className="bg-muted/50 rounded p-2">
-                        <p className="text-xs text-muted-foreground mb-1">
-                          识别到 {Object.keys(image.recognitionResult).length} 个字段
-                        </p>
-                        <ScrollArea className="h-20">
-                          <div className="space-y-1">
-                            {Object.entries(image.recognitionResult).slice(0, 3).map(([key, value]) => (
-                              <div key={key} className="text-xs">
-                                <span className="font-medium">{key}:</span>
-                                <span className="ml-1 text-muted-foreground">
-                                  {String(value).substring(0, 15)}
-                                  {String(value).length > 15 ? '...' : ''}
-                                </span>
-                              </div>
-                            ))}
-                            {Object.keys(image.recognitionResult).length > 3 && (
-                              <p className="text-xs text-muted-foreground">
-                                还有 {Object.keys(image.recognitionResult).length - 3} 个字段...
-                              </p>
-                            )}
-                          </div>
-                        </ScrollArea>
-                      </div>
-                      <Button
-                        onClick={() => handleApplyResult(image.recognitionResult!, image.id)}
-                        size="sm"
-                        className="w-full"
-                      >
-                        应用此结果
-                      </Button>
-                    </div>
+                    <RecognitionResultPreview 
+                      result={image.recognitionResult}
+                      imageId={image.id}
+                      onApplyResult={handleApplyResult}
+                    />
                   )}
 
                   {/* 错误信息 */}
@@ -412,8 +438,164 @@ const BatchImageUploader: React.FC<BatchImageUploaderProps> = ({
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </>
+  );
+};
+
+// 识别结果预览组件
+const RecognitionResultPreview: React.FC<{
+  result: RecognitionResult;
+  imageId: string;
+  onApplyResult: (result: RecognitionResult, imageId: string) => void;
+}> = ({ result, imageId, onApplyResult }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const getKeyFields = (result: RecognitionResult) => {
+    const keyFields = ['姓名', '性别', '年龄', '主要诊断', '入院时间', '出院时间'];
+    const foundFields: { key: string; value: any }[] = [];
+    
+    const extractValue = (obj: any, path: string): any => {
+      if (typeof obj !== 'object' || obj === null) return obj;
+      
+      // 直接查找
+      if (obj[path]) return obj[path];
+      
+      // 在嵌套对象中查找
+      for (const [key, value] of Object.entries(obj)) {
+        if (typeof value === 'object' && value !== null) {
+          const nestedResult = extractValue(value, path);
+          if (nestedResult) return nestedResult;
+        }
+      }
+      return null;
+    };
+
+    keyFields.forEach(field => {
+      const value = extractValue(result, field);
+      if (value && value !== '') {
+        foundFields.push({ key: field, value });
+      }
+    });
+
+    return foundFields;
+  };
+
+  const getDataQuality = (result: RecognitionResult) => {
+    const totalKeys = Object.keys(result).length;
+    const filledKeys = Object.values(result).filter(value => 
+      value && value !== '' && value !== null && value !== undefined
+    ).length;
+    
+    const fillRate = totalKeys > 0 ? Math.round((filledKeys / totalKeys) * 100) : 0;
+    const keyFields = getKeyFields(result);
+    
+    return {
+      totalFields: totalKeys,
+      filledFields: filledKeys,
+      fillRate,
+      keyFieldsCount: keyFields.length,
+      hasKeyInfo: keyFields.length >= 3
+    };
+  };
+
+  const renderValue = (value: any): string => {
+    if (typeof value === 'object' && value !== null) {
+      if (Array.isArray(value)) {
+        return value.join(', ');
+      }
+      return JSON.stringify(value, null, 2);
+    }
+    return String(value);
+  };
+
+  const keyFields = getKeyFields(result);
+  const quality = getDataQuality(result);
+
+  return (
+    <div className="space-y-3">
+      {/* 数据质量指标 */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Badge variant={quality.hasKeyInfo ? "default" : "secondary"}>
+            {quality.totalFields} 字段
+          </Badge>
+          <Badge variant={quality.fillRate >= 70 ? "default" : quality.fillRate >= 40 ? "secondary" : "outline"}>
+            {quality.fillRate}% 填充率
+          </Badge>
+        </div>
+        <Badge variant={quality.keyFieldsCount >= 4 ? "default" : "outline"}>
+          {quality.keyFieldsCount}/6 关键信息
+        </Badge>
+      </div>
+
+      {/* 关键字段预览 */}
+      <div className="bg-muted/50 rounded-lg p-3">
+        {keyFields.length > 0 ? (
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground mb-2">关键信息预览</p>
+            {keyFields.slice(0, 4).map(({ key, value }) => (
+              <div key={key} className="flex justify-between items-start text-sm">
+                <span className="font-medium text-foreground">{key}:</span>
+                <span className="text-muted-foreground text-right max-w-[60%] break-words">
+                  {renderValue(value)}
+                </span>
+              </div>
+            ))}
+            {keyFields.length > 4 && (
+              <p className="text-xs text-muted-foreground">
+                还有 {keyFields.length - 4} 个关键字段...
+              </p>
+            )}
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            未识别到标准关键字段，请展开查看完整结果
+          </p>
+        )}
+      </div>
+
+      {/* 展开/收起详细结果 */}
+      <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+        <CollapsibleTrigger asChild>
+          <Button variant="ghost" size="sm" className="w-full justify-between p-2">
+            <span className="flex items-center gap-2">
+              <Eye className="w-4 h-4" />
+              查看完整识别结果
+            </span>
+            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="mt-2 p-3 bg-muted/30 rounded-lg border">
+            <ScrollArea className="h-48">
+              <div className="space-y-2">
+                {Object.entries(result).map(([key, value]) => (
+                  <div key={key} className="text-xs border-b border-border/50 pb-1">
+                    <div className="font-medium text-foreground mb-1">{key}:</div>
+                    <div className="text-muted-foreground pl-2 whitespace-pre-wrap">
+                      {renderValue(value)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+
+      {/* 应用结果按钮 */}
+      <Button
+        onClick={() => onApplyResult(result, imageId)}
+        size="sm"
+        className="w-full"
+        variant={quality.hasKeyInfo ? "default" : "outline"}
+      >
+        应用此结果到表单
+        {quality.hasKeyInfo && <CheckCircle className="w-4 h-4 ml-2" />}
+      </Button>
+    </div>
   );
 };
 
