@@ -170,7 +170,11 @@ const RecordList = () => {
                 </TableHeader>
                 <TableBody>
                   {filteredRecords.map((record) => (
-                    <TableRow key={record.id} className="cursor-pointer hover:bg-muted/50">
+                    <TableRow 
+                      key={record.id} 
+                      className="cursor-pointer hover:bg-muted/50 transition-colors" 
+                      onClick={() => navigate(`/records/${record.id}`)}
+                    >
                       <TableCell className="font-medium">
                         {record.name || "未填写"}
                       </TableCell>

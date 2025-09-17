@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
 import RecordList from "./pages/RecordList";
+import RecordDetail from "./pages/RecordDetail";
 import Auth from "./pages/Auth";
 import SetupAdmin from "./pages/SetupAdmin";
 import NotFound from "./pages/NotFound";
@@ -27,6 +28,11 @@ const App = () => (
             <Route path="/records" element={
               <ProtectedRoute requireAdmin={true}>
                 <RecordList />
+              </ProtectedRoute>
+            } />
+            <Route path="/records/:id" element={
+              <ProtectedRoute requireAdmin={true}>
+                <RecordDetail />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
