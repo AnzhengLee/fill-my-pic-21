@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, FileText, Search, Plus } from "lucide-react";
+import { ArrowLeft, FileText, Search, Plus, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
 interface MedicalRecord {
@@ -20,10 +21,20 @@ interface MedicalRecord {
 
 const RecordList = () => {
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const { toast } = useToast();
   const [records, setRecords] = useState<MedicalRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: "已退出登录",
+      description: "您已成功退出系统",
+    });
+    navigate("/");
+  };
 
   const fetchRecords = async () => {
     try {
