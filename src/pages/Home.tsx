@@ -1,19 +1,29 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Save, FileText, List } from "lucide-react";
+import { ArrowLeft, Save, FileText, List, LogIn, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { InfoRecognitionForm, FormRef } from "@/components/InfoRecognitionForm";
 import ImageUploader from "@/components/ImageUploader";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Home = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, isAdmin, signOut } = useAuth();
   const formRef = useRef<FormRef>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [recognitionData, setRecognitionData] = useState<Record<string, any> | null>(null);
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: "已退出登录",
+      description: "您已成功退出系统",
+    });
+  };
 
   const handleRecognitionComplete = (data: Record<string, any>) => {
     setRecognitionData(data);
@@ -60,15 +70,45 @@ const Home = () => {
               <h1 className="text-3xl font-bold text-foreground">医疗信息识别系统</h1>
             </div>
             
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate("/records")}
-              className="flex items-center gap-2"
-            >
-              <List className="w-4 h-4" />
-              查看记录
-            </Button>
+            <div className="flex items-center gap-2">
+              {user ? (
+                <>
+                  <span className="text-sm text-muted-foreground">
+                    欢迎，{isAdmin ? "管理员" : "用户"}
+                  </span>
+                  {isAdmin && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate("/records")}
+                      className="flex items-center gap-2"
+                    >
+                      <List className="w-4 h-4" />
+                      查看记录
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleSignOut}
+                    className="flex items-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    退出
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/auth")}
+                  className="flex items-center gap-2"
+                >
+                  <LogIn className="w-4 h-4" />
+                  管理员登录
+                </Button>
+              )}
+            </div>
           </div>
           
           <p className="text-muted-foreground">

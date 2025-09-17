@@ -87,13 +87,25 @@ const RecordList = () => {
               <h1 className="text-3xl font-bold text-foreground">医疗记录列表</h1>
             </div>
             
-            <Button
-              onClick={() => navigate("/")}
-              className="flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              新建记录
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => navigate("/")}
+                className="flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                新建记录
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleSignOut}
+                className="flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                退出登录
+              </Button>
+            </div>
           </div>
           
           <p className="text-muted-foreground">
