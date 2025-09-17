@@ -25,19 +25,12 @@ export type Database = {
           birth_date: string
           birth_place: string
           contact_address: string
-          contact_name: string | null
-          contact_phone: string | null
-          contact_relationship: string | null
           created_at: string
-          current_address: string | null
           diagnosis_info: Json | null
           discharge_date: string
-          discharge_department: string | null
-          discharge_ward: string | null
           ethnicity: string
+          fees: Json | null
           gender: string
-          household_address: string | null
-          household_postal_code: string | null
           id: string
           id_number: string
           marital_status: string
@@ -50,12 +43,8 @@ export type Database = {
           phone: string
           postal_code: string
           quality_control: Json | null
-          transfer_department: string | null
           updated_at: string
           user_id: string | null
-          work_address: string | null
-          work_phone: string | null
-          work_postal_code: string | null
           work_unit: string
         }
         Insert: {
@@ -68,19 +57,12 @@ export type Database = {
           birth_date: string
           birth_place: string
           contact_address: string
-          contact_name?: string | null
-          contact_phone?: string | null
-          contact_relationship?: string | null
           created_at?: string
-          current_address?: string | null
           diagnosis_info?: Json | null
           discharge_date: string
-          discharge_department?: string | null
-          discharge_ward?: string | null
           ethnicity: string
+          fees?: Json | null
           gender: string
-          household_address?: string | null
-          household_postal_code?: string | null
           id?: string
           id_number: string
           marital_status: string
@@ -93,12 +75,8 @@ export type Database = {
           phone: string
           postal_code: string
           quality_control?: Json | null
-          transfer_department?: string | null
           updated_at?: string
           user_id?: string | null
-          work_address?: string | null
-          work_phone?: string | null
-          work_postal_code?: string | null
           work_unit: string
         }
         Update: {
@@ -111,19 +89,12 @@ export type Database = {
           birth_date?: string
           birth_place?: string
           contact_address?: string
-          contact_name?: string | null
-          contact_phone?: string | null
-          contact_relationship?: string | null
           created_at?: string
-          current_address?: string | null
           diagnosis_info?: Json | null
           discharge_date?: string
-          discharge_department?: string | null
-          discharge_ward?: string | null
           ethnicity?: string
+          fees?: Json | null
           gender?: string
-          household_address?: string | null
-          household_postal_code?: string | null
           id?: string
           id_number?: string
           marital_status?: string
@@ -136,40 +107,9 @@ export type Database = {
           phone?: string
           postal_code?: string
           quality_control?: Json | null
-          transfer_department?: string | null
           updated_at?: string
           user_id?: string | null
-          work_address?: string | null
-          work_phone?: string | null
-          work_postal_code?: string | null
           work_unit?: string
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          created_at: string | null
-          email: string
-          id: string
-          role: Database["public"]["Enums"]["user_role"]
-          updated_at: string | null
-          username: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          email: string
-          id: string
-          role?: Database["public"]["Enums"]["user_role"]
-          updated_at?: string | null
-          username?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          email?: string
-          id?: string
-          role?: Database["public"]["Enums"]["user_role"]
-          updated_at?: string | null
-          username?: string | null
         }
         Relationships: []
       }
@@ -178,17 +118,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_email_by_username: {
-        Args: { input_username: string }
-        Returns: string
-      }
-      is_admin: {
-        Args: { user_id?: string }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
-      user_role: "admin" | "user"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -315,8 +248,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      user_role: ["admin", "user"],
-    },
+    Enums: {},
   },
 } as const

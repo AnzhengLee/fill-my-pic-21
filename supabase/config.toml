@@ -1,7 +1,1 @@
 project_id = "vmihkigligqwsauzryvf"
-
-[functions.create-admin]
-verify_jwt = false
-
-[functions.image-recognition]
-verify_jwt = false

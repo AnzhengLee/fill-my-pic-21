@@ -3,13 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, FileText, Search, Plus, Eye, Edit, Trash2, LogOut } from "lucide-react";
+import { ArrowLeft, FileText, Search, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface MedicalRecord {
   id: string;
@@ -23,11 +21,9 @@ interface MedicalRecord {
 const RecordList = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { signOut, profile } = useAuth();
   const [records, setRecords] = useState<MedicalRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchRecords = async () => {
     try {
@@ -48,37 +44,6 @@ const RecordList = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleDelete = async (id: string) => {
-    setDeletingId(id);
-    try {
-      const { error } = await supabase
-        .from('medical_records')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      setRecords(records.filter(record => record.id !== id));
-      toast({
-        title: "删除成功",
-        description: "记录已成功删除",
-      });
-    } catch (error) {
-      toast({
-        title: "删除失败",
-        description: "无法删除该记录",
-        variant: "destructive",
-      });
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
   };
 
   useEffect(() => {
@@ -119,34 +84,20 @@ const RecordList = () => {
               <div className="p-2 rounded-lg bg-primary/10">
                 <FileText className="w-6 h-6 text-primary" />
               </div>
-              <h1 className="text-3xl font-bold text-foreground">医疗记录管理</h1>
+              <h1 className="text-3xl font-bold text-foreground">医疗记录列表</h1>
             </div>
             
-            <div className="flex items-center gap-3">
-              <Badge variant="secondary" className="px-3 py-1">
-                管理员: {profile?.email}
-              </Badge>
-              <Button
-                onClick={() => navigate("/")}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                新建记录
-              </Button>
-              <Button
-                onClick={handleSignOut}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <LogOut className="w-4 h-4" />
-                退出登录
-              </Button>
-            </div>
+            <Button
+              onClick={() => navigate("/")}
+              className="flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              新建记录
+            </Button>
           </div>
           
           <p className="text-muted-foreground">
-            管理和查看所有医疗信息记录
+            查看和管理所有医疗信息记录
           </p>
         </div>
 
@@ -192,12 +143,11 @@ const RecordList = () => {
                     <TableHead>主要诊断</TableHead>
                     <TableHead>创建时间</TableHead>
                     <TableHead>记录ID</TableHead>
-                    <TableHead className="text-right">操作</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredRecords.map((record) => (
-                    <TableRow key={record.id} className="hover:bg-muted/50">
+                    <TableRow key={record.id} className="cursor-pointer hover:bg-muted/50">
                       <TableCell className="font-medium">
                         {record.name || "未填写"}
                       </TableCell>
@@ -213,46 +163,6 @@ const RecordList = () => {
                       <TableCell>{formatDate(record.created_at)}</TableCell>
                       <TableCell className="font-mono text-sm text-muted-foreground">
                         {record.id.substring(0, 8)}...
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate(`/records/${record.id}`)}
-                            className="flex items-center gap-1"
-                          >
-                            <Eye className="w-4 h-4" />
-                            查看
-                          </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="flex items-center gap-1 text-destructive hover:text-destructive"
-                                disabled={deletingId === record.id}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                删除
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>确认删除</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  您确定要删除患者 "{record.name}" 的记录吗？此操作无法撤销。
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>取消</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDelete(record.id)}>
-                                  删除
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

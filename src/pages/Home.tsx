@@ -1,10 +1,10 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Save, FileText, List, Shield } from "lucide-react";
+import { ArrowLeft, Save, FileText, List } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { InfoRecognitionForm, FormRef } from "@/components/InfoRecognitionForm";
-import BatchImageUploader from "@/components/BatchImageUploader";
+import ImageUploader from "@/components/ImageUploader";
 import { useToast } from "@/hooks/use-toast";
 
 const Home = () => {
@@ -14,7 +14,6 @@ const Home = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [recognitionData, setRecognitionData] = useState<Record<string, any> | null>(null);
-  const [isAdminHovered, setIsAdminHovered] = useState(false);
 
   const handleRecognitionComplete = (data: Record<string, any>) => {
     setRecognitionData(data);
@@ -33,10 +32,6 @@ const Home = () => {
     try {
       // Form submission will be handled in the InfoRecognitionForm component
       console.log("Form data:", data);
-      
-      // 清空识别数据状态
-      setRecognitionData(null);
-      
       toast({
         title: "保存成功",
         description: "医疗信息记录已成功保存",
@@ -65,33 +60,15 @@ const Home = () => {
               <h1 className="text-3xl font-bold text-foreground">医疗信息识别系统</h1>
             </div>
             
-            <div 
-              className="relative flex items-center gap-3 min-w-[120px] min-h-[40px] justify-end"
-              onMouseEnter={() => setIsAdminHovered(true)}
-              onMouseLeave={() => setIsAdminHovered(false)}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/records")}
+              className="flex items-center gap-2"
             >
-              {/* Subtle visual hint */}
-              <div className={`absolute right-0 top-1/2 transform -translate-y-1/2 transition-opacity duration-300 ${
-                isAdminHovered ? 'opacity-0' : 'opacity-30'
-              }`}>
-                <Shield className="w-4 h-4 text-muted-foreground" />
-              </div>
-              
-              {/* Admin button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate("/admin-login")}
-                className={`flex items-center gap-2 transition-all duration-300 ${
-                  isAdminHovered 
-                    ? 'opacity-100 pointer-events-auto translate-x-0' 
-                    : 'opacity-0 pointer-events-none translate-x-4'
-                }`}
-              >
-                <Shield className="w-4 h-4" />
-                管理后台
-              </Button>
-            </div>
+              <List className="w-4 h-4" />
+              查看记录
+            </Button>
           </div>
           
           <p className="text-muted-foreground">
@@ -99,8 +76,8 @@ const Home = () => {
           </p>
         </div>
 
-        {/* Batch Image Upload Card */}
-        <BatchImageUploader
+        {/* Image Upload Card */}
+        <ImageUploader
           onRecognitionComplete={handleRecognitionComplete}
           isProcessing={isProcessing}
           setIsProcessing={setIsProcessing}
