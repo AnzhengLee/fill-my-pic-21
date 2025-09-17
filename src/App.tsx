@@ -8,6 +8,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
 import RecordList from "./pages/RecordList";
 import Auth from "./pages/Auth";
+import SetupAdmin from "./pages/SetupAdmin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/setup" element={<SetupAdmin />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/records" element={
               <ProtectedRoute requireAdmin={true}>
