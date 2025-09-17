@@ -327,9 +327,11 @@ const RecordDetail = () => {
                   <label className="text-sm font-medium text-muted-foreground">其他诊断</label>
                   <div className="text-sm">
                     {record.diagnosis_info.other_diagnoses && record.diagnosis_info.other_diagnoses.length > 0 ? (
-                      <ul className="list-disc list-inside">
-                        {record.diagnosis_info.other_diagnoses.map((diagnosis: string, index: number) => (
-                          <li key={index}>{diagnosis}</li>
+                      <ul className="list-disc list-inside space-y-1">
+                        {record.diagnosis_info.other_diagnoses.map((diagnosis: any, index: number) => (
+                          <li key={index}>
+                            {typeof diagnosis === 'string' ? diagnosis : diagnosis.diagnosis || JSON.stringify(diagnosis)}
+                          </li>
                         ))}
                       </ul>
                     ) : (
