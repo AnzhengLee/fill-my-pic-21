@@ -86,42 +86,17 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           const formData = new FormData();
           formData.append('image', file);
 
-          // 使用较长的超时时间，因为后端已经有重试机制
-          const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), 120000); // 2分钟超时
-
-          const response = await fetch('https://mfjrbbhftoqybpgwbymc.supabase.co/functions/v1/image-recognition', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1manJiYmhmdG9xeWJwZ3dieW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4MTI2NTUsImV4cCI6MjA3MjM4ODY1NX0.sFZ8glG_M2uWzPQdc0yg94MTCg9Zfx-7RUTawCEj6wI`,
-            },
+          console.log('调用 Supabase Edge Function...');
+          const { data: response, error } = await supabase.functions.invoke('image-recognition', {
             body: formData,
-            signal: controller.signal,
           });
 
-          clearTimeout(timeout);
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            lastError = `HTTP ${response.status}: ${errorText}`;
-            
-            // 如果是5xx错误且还有重试机会，则重试
-            if (response.status >= 500 && attempt < maxRetries) {
-              console.log(`服务器错误，等待${attempt * 3}秒后重试...`);
-              toast({
-                title: `识别遇到问题，正在重试 (${attempt}/${maxRetries})`,
-                description: "服务器暂时繁忙，请稍候...",
-                variant: "default",
-              });
-              await new Promise(resolve => setTimeout(resolve, attempt * 3000));
-              continue;
-            }
-            
-            throw new Error(lastError);
+          if (error) {
+            throw new Error(`Edge Function 调用失败: ${error.message}`);
           }
 
-          const data = await response.json();
-          console.log('前端收到响应:', data);
+          console.log('前端收到响应:', response);
+          const data = response;
 
           if (data && data.success && data.recognitionData) {
             clearInterval(progressInterval);
