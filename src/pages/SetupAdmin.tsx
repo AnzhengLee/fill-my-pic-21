@@ -16,7 +16,7 @@ const SetupAdmin = () => {
       const { data, error } = await supabase.functions.invoke('create-admin-user', {
         body: {
           email: 'admin@system.local',
-          password: 'admin123'
+          password: 'Mrecord_2025'
         }
       });
 
