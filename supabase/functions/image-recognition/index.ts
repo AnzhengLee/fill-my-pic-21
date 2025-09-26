@@ -181,7 +181,7 @@ async function callDifyAPI(imageFile: File): Promise<Record<string, any>> {
         // 先尝试直接解析整个答案
         difyData = JSON.parse(answerText);
       } catch (e) {
-        console.log('直接JSON解析失败，尝试提取JSON部分:', e.message);
+        console.log('直接JSON解析失败，尝试提取JSON部分:', (e as Error).message);
         
         // 尝试从文本中提取JSON部分，支持多种格式
         const jsonPatterns = [
@@ -200,7 +200,7 @@ async function callDifyAPI(imageFile: File): Promise<Record<string, any>> {
               console.log('成功提取并解析JSON数据');
               break;
             } catch (parseError) {
-              console.log(`JSON解析失败 (模式${pattern}):`, parseError.message);
+              console.log(`JSON解析失败 (模式${pattern}):`, (parseError as Error).message);
             }
           }
         }
@@ -223,14 +223,15 @@ async function callDifyAPI(imageFile: File): Promise<Record<string, any>> {
       return mappedData;
 
     } catch (error) {
-      console.error(`第${attempt}次尝试失败:`, error.message);
+      const err = error as Error;
+      console.error(`第${attempt}次尝试失败:`, err.message);
       
       // 如果是超时或网络错误，且还有重试次数，继续重试
       if (attempt < maxRetries && (
-        error.name === 'AbortError' || 
-        error.message.includes('timeout') || 
-        error.message.includes('504') ||
-        error.message.includes('503')
+        err.name === 'AbortError' || 
+        err.message.includes('timeout') || 
+        err.message.includes('504') ||
+        err.message.includes('503')
       )) {
         console.log(`等待${attempt * 2}秒后重试...`);
         await new Promise(resolve => setTimeout(resolve, attempt * 2000));
@@ -239,7 +240,7 @@ async function callDifyAPI(imageFile: File): Promise<Record<string, any>> {
       
       // 最后一次尝试失败，抛出错误
       if (attempt === maxRetries) {
-        throw new Error(`Dify API调用失败 (${maxRetries}次尝试后): ${error.message}`);
+        throw new Error(`Dify API调用失败 (${maxRetries}次尝试后): ${err.message}`);
       }
     }
   }

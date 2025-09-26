@@ -51,7 +51,7 @@ serve(async (req) => {
     console.error('Error in create-admin-user function:', error)
     return new Response(
       JSON.stringify({ 
-        error: error.message 
+        error: (error as Error).message 
       }),
       { 
         status: 400,
