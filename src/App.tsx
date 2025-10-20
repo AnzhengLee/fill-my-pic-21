@@ -10,6 +10,7 @@ import RecordList from "./pages/RecordList";
 import RecordDetail from "./pages/RecordDetail";
 import Auth from "./pages/Auth";
 import SetupAdmin from "./pages/SetupAdmin";
+import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,11 @@ const App = () => (
             <Route path="/records/:id" element={
               <ProtectedRoute requireAdmin={true}>
                 <RecordDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/users" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminUsers />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
