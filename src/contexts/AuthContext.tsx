@@ -30,13 +30,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Check admin status - for now just check if user exists and email is admin
+        // Use setTimeout to avoid deadlock when calling Supabase from auth state change
         if (session?.user) {
-          setIsAdmin(session.user.email === 'admin@system.local');
+          setTimeout(async () => {
+            try {
+              const { data, error } = await supabase.rpc('is_admin');
+              if (!error) {
+                setIsAdmin(data === true);
+              } else {
+                console.error('Error checking admin status:', error);
+                setIsAdmin(false);
+              }
+            } catch (e) {
+              console.error('Error checking admin status:', e);
+              setIsAdmin(false);
+            }
+          }, 0);
         } else {
           setIsAdmin(false);
         }

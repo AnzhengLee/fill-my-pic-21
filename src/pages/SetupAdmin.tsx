@@ -25,7 +25,7 @@ const SetupAdmin = () => {
       setCreated(true);
       toast({
         title: "管理员用户创建成功",
-        description: "用户名: admin, 密码: admin123",
+        description: "用户名: admin@system.local, 密码: Mrecord_2025",
       });
     } catch (error: any) {
       console.error('Error creating admin user:', error);
@@ -61,8 +61,8 @@ const SetupAdmin = () => {
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold text-green-600">设置完成!</h1>
           <p>管理员用户已创建</p>
-          <p>用户名: <strong>admin</strong></p>
-          <p>密码: <strong>admin123</strong></p>
+          <p>用户名: <strong>admin@system.local</strong></p>
+          <p>密码: <strong>Mrecord_2025</strong></p>
           <Button onClick={() => navigate('/auth')}>
             前往登录
           </Button>
