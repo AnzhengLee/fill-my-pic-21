@@ -7,7 +7,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   isAdmin: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: any; data?: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -69,13 +69,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    console.log('🔐 开始登录流程');
+    console.log('📧 Email:', email);
+    console.log('🔑 使用的密码长度:', password.length);
+    
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      return { error };
+      
+      // 详细记录响应
+      if (error) {
+        console.error('❌ 登录失败 - 完整错误对象:', {
+          message: error.message,
+          status: error.status,
+          code: (error as any).code,
+          details: error
+        });
+      } else {
+        console.log('✅ 登录成功 - 用户信息:', {
+          userId: data.user?.id,
+          email: data.user?.email,
+          lastSignIn: data.user?.last_sign_in_at
+        });
+      }
+      
+      return { error, data };
     } catch (error: any) {
+      console.error('💥 登录过程中发生异常:', error);
       return { error };
     }
   };

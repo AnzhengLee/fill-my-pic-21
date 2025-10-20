@@ -21,24 +21,52 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
 
+    console.log('📝 提交登录表单');
     // Convert username to email format for our admin user
     const email = username === 'admin' ? 'admin@system.local' : username;
-    const {
-      error
-    } = await signIn(email, password);
+    console.log('🔄 转换后的 email:', email);
+    
+    const { error, data } = await signIn(email, password);
+    
     if (error) {
+      // 根据错误类型显示不同的提示
+      let errorMessage = '用户名或密码错误';
+      let errorDetails = '';
+      
+      if (error.message.includes('Invalid login credentials')) {
+        errorMessage = '用户名或密码错误';
+        errorDetails = '请检查您的凭据是否正确';
+      } else if (error.message.includes('Email not confirmed')) {
+        errorMessage = '邮箱未验证';
+        errorDetails = '请先验证您的邮箱';
+      } else if (error.message.includes('network')) {
+        errorMessage = '网络连接失败';
+        errorDetails = '请检查您的网络连接';
+      }
+      
       toast({
         title: "登录失败",
-        description: "用户名或密码错误",
+        description: `${errorMessage}${errorDetails ? ': ' + errorDetails : ''}`,
         variant: "destructive"
       });
+      
+      // 在控制台显示完整错误信息供调试
+      console.error('🚨 登录错误详情:', {
+        message: error.message,
+        status: error.status,
+        code: (error as any).code,
+        email: email,
+        timestamp: new Date().toISOString()
+      });
     } else {
+      console.log('🎉 登录成功，准备跳转');
       toast({
         title: "登录成功",
         description: "欢迎回来，管理员"
       });
       navigate('/records');
     }
+    
     setLoading(false);
   };
   return <div className="min-h-screen flex items-center justify-center bg-medical-light">
