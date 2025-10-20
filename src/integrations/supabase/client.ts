@@ -7,7 +7,7 @@ import type { Database } from "./types";
 
 const SUPABASE_URL = "https://supabase.ppfsui.com:8443";
 const SUPABASE_PUBLISHABLE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS5wcGZzdWkuY29tIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk5OTA4NDgwMH0.2pR7L3sT5dQ8fG7hJ2kM9jN0lP1oQ3rS4tU5vW6xY7c";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS5wcGZzdWkuY29tIiwicm9sZSI6ImFub24iLCJleHAiOjE5OTkwODQ4MDB9.7kfQZ8rL5X6aJ3d2F9mKp7sT2wQ5eR8tU7vB6nM4lG0";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
