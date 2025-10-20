@@ -13,7 +13,7 @@ const SetupAdmin = () => {
       
       toast({
         title: "设置成功",
-        description: "管理员用户已创建，密码为: admin123",
+        description: "管理员用户已创建/更新，密码为: Mrecord_2025",
       });
     } catch (error: any) {
       toast({
