@@ -11,10 +11,12 @@ import { Copy, CheckCircle2, AlertCircle } from 'lucide-react';
 const JwtGenerator = () => {
   const { toast } = useToast();
   const [jwtSecret, setJwtSecret] = useState('6a9f3c8d7b2e5f1a4c7d9e0b3a5f8c2d1e4f7a8b0c3d5e7f9a2b4c6d8e0f1a');
-  const [issuer, setIssuer] = useState('https://supabase.ppfsui.com:8443');
-  const [secretFormat, setSecretFormat] = useState<'text' | 'hex'>('text');
+  const [issuer, setIssuer] = useState('supabase.ppfsui.com');
+  const [secretFormat, setSecretFormat] = useState<'text' | 'hex'>('hex');
   const [anonKey, setAnonKey] = useState('');
   const [serviceKey, setServiceKey] = useState('');
+  const [testToken, setTestToken] = useState('');
+  const [verifyResult, setVerifyResult] = useState<{ valid: boolean; message: string } | null>(null);
   const [copied, setCopied] = useState<'anon' | 'service' | null>(null);
 
   // Base64 URL 编码（用于字符串）
@@ -148,6 +150,53 @@ const JwtGenerator = () => {
     }
   };
 
+  const verifyExistingToken = async () => {
+    try {
+      setVerifyResult(null);
+      
+      if (!testToken) {
+        toast({
+          title: '请输入 Token',
+          description: '请在输入框中粘贴要验证的 JWT token',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // 分解 JWT
+      const parts = testToken.split('.');
+      if (parts.length !== 3) {
+        setVerifyResult({ valid: false, message: '无效的 JWT 格式' });
+        return;
+      }
+
+      const [header, payload, signature] = parts;
+      const unsignedToken = `${header}.${payload}`;
+
+      // 重新计算签名
+      const expectedSignature = await hmacSha256(unsignedToken, jwtSecret, secretFormat === 'hex');
+
+      if (signature === expectedSignature) {
+        // 解码 payload 显示内容
+        const payloadJson = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+        setVerifyResult({ 
+          valid: true, 
+          message: `✓ 签名验证通过！\n\nPayload:\n${JSON.stringify(payloadJson, null, 2)}` 
+        });
+      } else {
+        setVerifyResult({ 
+          valid: false, 
+          message: `✗ 签名验证失败\n\n期望签名: ${expectedSignature}\n实际签名: ${signature}\n\n请检查 JWT_SECRET 是否正确，或尝试切换格式（十六进制/普通文本）` 
+        });
+      }
+    } catch (error) {
+      setVerifyResult({ 
+        valid: false, 
+        message: `验证出错: ${error instanceof Error ? error.message : '未知错误'}` 
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -166,17 +215,52 @@ const JwtGenerator = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <p><strong>Issuer 必须是完整 URL：</strong></p>
+            <p><strong>根据您的 .env 配置，Issuer 应该是纯域名：</strong></p>
             <code className="block p-2 bg-background rounded text-xs">
-              https://supabase.ppfsui.com:8443
+              supabase.ppfsui.com
             </code>
-            <p className="mt-3"><strong>JWT_SECRET 格式：</strong>如果您的密钥是通过 <code>openssl rand -hex 32</code> 生成的，请选择"十六进制"格式。</p>
+            <p className="mt-3 text-xs text-muted-foreground">
+              （不是完整 URL，不包含 https:// 和端口号）
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>配置信息</CardTitle>
+            <CardTitle>步骤 1：验证现有密钥（可选但推荐）</CardTitle>
+            <CardDescription>
+              先验证您 .env 中的 ANON_KEY 或 SERVICE_ROLE_KEY 是否与 JWT_SECRET 匹配
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="testToken">粘贴现有的 ANON_KEY 或 SERVICE_ROLE_KEY</Label>
+              <Textarea
+                id="testToken"
+                value={testToken}
+                onChange={(e) => setTestToken(e.target.value)}
+                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                className="font-mono text-xs h-20"
+              />
+            </div>
+
+            <Button onClick={verifyExistingToken} variant="outline" className="w-full">
+              验证现有密钥
+            </Button>
+
+            {verifyResult && (
+              <div className={`p-4 rounded-md ${verifyResult.valid ? 'bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800'}`}>
+                <pre className={`text-xs whitespace-pre-wrap ${verifyResult.valid ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}`}>
+                  {verifyResult.message}
+                </pre>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>步骤 2：生成新密钥</CardTitle>
             <CardDescription>
               输入您的 JWT_SECRET 和 Issuer（来自 .env 文件）
             </CardDescription>
@@ -216,16 +300,16 @@ const JwtGenerator = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="issuer">Issuer（完整 URL）</Label>
+              <Label htmlFor="issuer">Issuer（域名）</Label>
               <Input
                 id="issuer"
                 type="text"
                 value={issuer}
                 onChange={(e) => setIssuer(e.target.value)}
-                placeholder="https://supabase.ppfsui.com:8443"
+                placeholder="supabase.ppfsui.com"
               />
               <p className="text-xs text-muted-foreground">
-                从您的 .env 中复制 API_EXTERNAL_URL 或 SITE_URL 的值
+                只填写域名，不包含 https:// 和端口号
               </p>
             </div>
 
