@@ -359,6 +359,276 @@ const JwtGenerator = () => {
             )}
 
             {serviceKey && (
+              <Card className="border-purple-500 bg-purple-50 dark:bg-purple-950">
+                <CardHeader>
+                  <CardTitle className="text-purple-700 dark:text-purple-400 flex items-center justify-between">
+                    <span>📄 完整 .env 配置文件</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const envContent = `############
+# Secrets - 生产环境必须使用强密钥
+############
+POSTGRES_PASSWORD=ppfsui@798.com
+JWT_SECRET=${jwtSecret}
+ANON_KEY=${anonKey}
+SERVICE_ROLE_KEY=${serviceKey}
+DASHBOARD_USERNAME=ppfsui
+DASHBOARD_PASSWORD=Ppfsui@2024!Secure
+SECRET_KEY_BASE=9f2d7e4c8b1a3f5e7d9c2b4a6f8e0d1c3b5a7f9e2d4c6b8a0f1e3d5c7b9a0
+VAULT_ENC_KEY=5Cexs3RPMa/hIjLsxi9Y4YOrfNsPu1r7
+PG_META_CRYPTO_KEY=5/xSCAMgpnbcIvVLDAIPUbNRht0y09Qt
+
+
+############
+# 数据库配置
+############
+POSTGRES_HOST=db
+POSTGRES_DB=supabase
+POSTGRES_PORT=5432
+POSTGRES_USER=ppfsui
+
+
+############
+# Supavisor - 数据库连接池
+############
+POOLER_PROXY_PORT_TRANSACTION=6543
+POOLER_DEFAULT_POOL_SIZE=20
+POOLER_MAX_CLIENT_CONN=100
+POOLER_TENANT_ID=ppfsui-supabase-tenant
+POOLER_DB_POOL_SIZE=5
+
+
+############
+# API代理 - Kong网关（HTTPS配置）
+############
+KONG_HTTP_PORT=8000
+KONG_HTTPS_PORT=8443
+
+
+############
+# API - PostgREST配置
+############
+PGRST_DB_SCHEMAS=public,storage,graphql_public
+
+
+############
+# 认证服务 - GoTrue
+############
+SITE_URL=https://${issuer}:8443
+ADDITIONAL_REDIRECT_URLS=https://${issuer}:8443/**
+JWT_EXPIRY=3600
+DISABLE_SIGNUP=true
+API_EXTERNAL_URL=https://${issuer}:8443
+
+# 邮件配置
+MAILER_URLPATHS_CONFIRMATION="/auth/v1/verify"
+MAILER_URLPATHS_INVITE="/auth/v1/verify"
+MAILER_URLPATHS_RECOVERY="/auth/v1/verify"
+MAILER_URLPATHS_EMAIL_CHANGE="/auth/v1/verify"
+SMTP_ADMIN_EMAIL=admin@${issuer}
+SMTP_HOST=supabase-mail
+SMTP_PORT=2500
+SMTP_USER=smtp_user@${issuer}
+SMTP_PASS=smtp_secure_password
+SMTP_SENDER_NAME=Supabase
+
+# 认证方式开关
+ENABLE_EMAIL_SIGNUP=true
+ENABLE_EMAIL_AUTOCONFIRM=false
+ENABLE_PHONE_SIGNUP=true
+ENABLE_PHONE_AUTOCONFIRM=true
+
+
+############
+# 控制台 - Studio配置
+############
+STUDIO_DEFAULT_ORGANIZATION=ppfsui Organization
+STUDIO_DEFAULT_PROJECT=ppfsui Project
+SUPABASE_PUBLIC_URL=https://${issuer}:8443
+IMGPROXY_ENABLE_WEBP_DETECTION=true
+OPENAI_API_KEY=
+
+
+############
+# 函数服务配置
+############
+FUNCTIONS_VERIFY_JWT=false
+
+
+############
+# 日志分析配置
+############
+LOGFLARE_PUBLIC_ACCESS_TOKEN=logflare-public-7a9f3c8d7b2e5f1a4c7d9e0b3a
+LOGFLARE_PRIVATE_ACCESS_TOKEN=logflare-private-3d5c7b9a0f2e4d6c8b1a3f5e7d
+DOCKER_SOCKET_LOCATION=/var/run/docker.sock
+
+# 谷歌云配置（不使用则留空）
+GOOGLE_PROJECT_ID=
+GOOGLE_PROJECT_NUMBER=
+
+
+############
+# HTTPS证书路径
+############
+SSL_CERT_FILE=/etc/supabase/cert/${issuer}.pem
+SSL_KEY_FILE=/etc/supabase/cert/${issuer}.key
+
+# 其他配置
+ENABLE_ANONYMOUS_USERS=false
+GOTRUE_MAILER_EXTERNAL_HOSTS=${issuer}:8443`;
+                        navigator.clipboard.writeText(envContent);
+                        toast({
+                          title: '已复制完整配置',
+                          description: '完整的 .env 文件内容已复制到剪贴板',
+                        });
+                      }}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </CardTitle>
+                  <CardDescription>
+                    包含新生成的 JWT 密钥的完整 .env 配置
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <p className="text-sm font-semibold">复制以下内容替换您的 .env 文件：</p>
+                    <Textarea
+                      readOnly
+                      value={`############
+# Secrets - 生产环境必须使用强密钥
+############
+POSTGRES_PASSWORD=ppfsui@798.com
+JWT_SECRET=${jwtSecret}
+ANON_KEY=${anonKey}
+SERVICE_ROLE_KEY=${serviceKey}
+DASHBOARD_USERNAME=ppfsui
+DASHBOARD_PASSWORD=Ppfsui@2024!Secure
+SECRET_KEY_BASE=9f2d7e4c8b1a3f5e7d9c2b4a6f8e0d1c3b5a7f9e2d4c6b8a0f1e3d5c7b9a0
+VAULT_ENC_KEY=5Cexs3RPMa/hIjLsxi9Y4YOrfNsPu1r7
+PG_META_CRYPTO_KEY=5/xSCAMgpnbcIvVLDAIPUbNRht0y09Qt
+
+
+############
+# 数据库配置
+############
+POSTGRES_HOST=db
+POSTGRES_DB=supabase
+POSTGRES_PORT=5432
+POSTGRES_USER=ppfsui
+
+
+############
+# Supavisor - 数据库连接池
+############
+POOLER_PROXY_PORT_TRANSACTION=6543
+POOLER_DEFAULT_POOL_SIZE=20
+POOLER_MAX_CLIENT_CONN=100
+POOLER_TENANT_ID=ppfsui-supabase-tenant
+POOLER_DB_POOL_SIZE=5
+
+
+############
+# API代理 - Kong网关（HTTPS配置）
+############
+KONG_HTTP_PORT=8000
+KONG_HTTPS_PORT=8443
+
+
+############
+# API - PostgREST配置
+############
+PGRST_DB_SCHEMAS=public,storage,graphql_public
+
+
+############
+# 认证服务 - GoTrue
+############
+SITE_URL=https://${issuer}:8443
+ADDITIONAL_REDIRECT_URLS=https://${issuer}:8443/**
+JWT_EXPIRY=3600
+DISABLE_SIGNUP=true
+API_EXTERNAL_URL=https://${issuer}:8443
+
+# 邮件配置
+MAILER_URLPATHS_CONFIRMATION="/auth/v1/verify"
+MAILER_URLPATHS_INVITE="/auth/v1/verify"
+MAILER_URLPATHS_RECOVERY="/auth/v1/verify"
+MAILER_URLPATHS_EMAIL_CHANGE="/auth/v1/verify"
+SMTP_ADMIN_EMAIL=admin@${issuer}
+SMTP_HOST=supabase-mail
+SMTP_PORT=2500
+SMTP_USER=smtp_user@${issuer}
+SMTP_PASS=smtp_secure_password
+SMTP_SENDER_NAME=Supabase
+
+# 认证方式开关
+ENABLE_EMAIL_SIGNUP=true
+ENABLE_EMAIL_AUTOCONFIRM=false
+ENABLE_PHONE_SIGNUP=true
+ENABLE_PHONE_AUTOCONFIRM=true
+
+
+############
+# 控制台 - Studio配置
+############
+STUDIO_DEFAULT_ORGANIZATION=ppfsui Organization
+STUDIO_DEFAULT_PROJECT=ppfsui Project
+SUPABASE_PUBLIC_URL=https://${issuer}:8443
+IMGPROXY_ENABLE_WEBP_DETECTION=true
+OPENAI_API_KEY=
+
+
+############
+# 函数服务配置
+############
+FUNCTIONS_VERIFY_JWT=false
+
+
+############
+# 日志分析配置
+############
+LOGFLARE_PUBLIC_ACCESS_TOKEN=logflare-public-7a9f3c8d7b2e5f1a4c7d9e0b3a
+LOGFLARE_PRIVATE_ACCESS_TOKEN=logflare-private-3d5c7b9a0f2e4d6c8b1a3f5e7d
+DOCKER_SOCKET_LOCATION=/var/run/docker.sock
+
+# 谷歌云配置（不使用则留空）
+GOOGLE_PROJECT_ID=
+GOOGLE_PROJECT_NUMBER=
+
+
+############
+# HTTPS证书路径
+############
+SSL_CERT_FILE=/etc/supabase/cert/${issuer}.pem
+SSL_KEY_FILE=/etc/supabase/cert/${issuer}.key
+
+# 其他配置
+ENABLE_ANONYMOUS_USERS=false
+GOTRUE_MAILER_EXTERNAL_HOSTS=${issuer}:8443`}
+                      className="font-mono text-xs h-96"
+                    />
+                    <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950 rounded border border-amber-200 dark:border-amber-800">
+                      <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                      <div className="text-xs text-amber-800 dark:text-amber-200 space-y-1">
+                        <p className="font-semibold">更新步骤：</p>
+                        <ol className="list-decimal list-inside ml-2 space-y-1">
+                          <li>复制上方的完整配置</li>
+                          <li>备份您当前的 .env 文件</li>
+                          <li>替换 .env 文件内容</li>
+                          <li>运行 <code className="bg-background px-1 py-0.5 rounded">docker compose down</code></li>
+                          <li>运行 <code className="bg-background px-1 py-0.5 rounded">docker compose up -d</code></li>
+                        </ol>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {serviceKey && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
