@@ -15,36 +15,69 @@ const JwtGenerator = () => {
   const [serviceKey, setServiceKey] = useState('');
   const [copied, setCopied] = useState<'anon' | 'service' | null>(null);
 
-  // 简单的 base64url 编码
-  const base64UrlEncode = (str: string) => {
-    return btoa(str)
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '');
+  // 将十六进制字符串转换为字节数组
+  const hexToBytes = (hex: string): Uint8Array => {
+    const bytes = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < hex.length; i += 2) {
+      bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+    }
+    return bytes;
   };
 
-  // HMAC-SHA256 签名函数
-  const hmacSha256 = async (message: string, secret: string): Promise<string> => {
-    const encoder = new TextEncoder();
-    const keyData = encoder.encode(secret);
-    const messageData = encoder.encode(message);
-
-    const cryptoKey = await crypto.subtle.importKey(
-      'raw',
-      keyData,
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign']
-    );
-
-    const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
-    const signatureArray = Array.from(new Uint8Array(signature));
-    const signatureBase64 = btoa(String.fromCharCode(...signatureArray));
-    
-    return signatureBase64
+  // Base64 URL 编码
+  const base64UrlEncode = (bytes: Uint8Array): string => {
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary)
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
-      .replace(/=/g, '');
+      .replace(/=+$/, '');
+  };
+
+  // 字符串转 Base64 URL
+  const stringToBase64Url = (str: string): string => {
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(str);
+    return base64UrlEncode(bytes);
+  };
+
+  // HMAC-SHA256 签名
+  const hmacSha256 = async (message: string, secretHex: string): Promise<string> => {
+    try {
+      // 将十六进制密钥转换为字节数组
+      const keyBytes = hexToBytes(secretHex);
+      const keyBufferLike = keyBytes.buffer.slice(
+        keyBytes.byteOffset, 
+        keyBytes.byteOffset + keyBytes.byteLength
+      );
+      const keyBuffer = keyBufferLike instanceof ArrayBuffer ? keyBufferLike : new ArrayBuffer(0);
+      
+      // 导入密钥
+      const cryptoKey = await crypto.subtle.importKey(
+        'raw',
+        keyBuffer,
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+
+      // 对消息进行签名
+      const encoder = new TextEncoder();
+      const messageBytes = encoder.encode(message);
+      const messageBufferLike = messageBytes.buffer.slice(
+        messageBytes.byteOffset,
+        messageBytes.byteOffset + messageBytes.byteLength
+      );
+      const messageBuffer = messageBufferLike instanceof ArrayBuffer ? messageBufferLike : new ArrayBuffer(0);
+      const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageBuffer);
+      
+      // 将签名转换为 Base64 URL
+      return base64UrlEncode(new Uint8Array(signature));
+    } catch (error) {
+      throw new Error(`签名失败: ${error instanceof Error ? error.message : '未知错误'}`);
+    }
   };
 
   const generateJwt = async (role: 'anon' | 'service_role') => {
@@ -60,10 +93,12 @@ const JwtGenerator = () => {
         exp: 1999084800 // 2033-05-18
       };
 
-      const encodedHeader = base64UrlEncode(JSON.stringify(header));
-      const encodedPayload = base64UrlEncode(JSON.stringify(payload));
+      // 编码 Header 和 Payload
+      const encodedHeader = stringToBase64Url(JSON.stringify(header));
+      const encodedPayload = stringToBase64Url(JSON.stringify(payload));
       const unsignedToken = `${encodedHeader}.${encodedPayload}`;
 
+      // 使用十六进制密钥进行签名
       const signature = await hmacSha256(unsignedToken, jwtSecret);
       const jwt = `${unsignedToken}.${signature}`;
 
@@ -128,7 +163,7 @@ const JwtGenerator = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="jwtSecret">JWT_SECRET</Label>
+              <Label htmlFor="jwtSecret">JWT_SECRET（十六进制，64字符）</Label>
               <Input
                 id="jwtSecret"
                 type="text"
@@ -138,7 +173,7 @@ const JwtGenerator = () => {
                 className="font-mono text-sm"
               />
               <p className="text-xs text-muted-foreground">
-                来自 .env 文件的 JWT_SECRET
+                来自 .env 文件的 JWT_SECRET（必须是64个十六进制字符）
               </p>
             </div>
 
@@ -193,8 +228,8 @@ const JwtGenerator = () => {
                   />
                   <div className="mt-4 p-3 bg-muted rounded-md">
                     <p className="text-sm font-semibold mb-2">使用方法：</p>
-                    <code className="text-xs">
-                      {`// src/integrations/supabase/client.ts\nconst SUPABASE_PUBLISHABLE_KEY = "${anonKey.substring(0, 30)}..."`}
+                    <code className="text-xs break-all">
+                      {`const SUPABASE_PUBLISHABLE_KEY = "${anonKey.substring(0, 30)}..."`}
                     </code>
                   </div>
                 </CardContent>
@@ -230,8 +265,8 @@ const JwtGenerator = () => {
                   />
                   <div className="mt-4 p-3 bg-muted rounded-md">
                     <p className="text-sm font-semibold mb-2">使用方法：</p>
-                    <code className="text-xs">
-                      {`// supabase/functions/xxx/index.ts\nconst SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')`}
+                    <code className="text-xs break-all">
+                      {`const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')`}
                     </code>
                   </div>
                 </CardContent>
@@ -246,7 +281,21 @@ const JwtGenerator = () => {
                 <p>1. <strong>ANON_KEY</strong> 可以安全地在前端代码中使用</p>
                 <p>2. <strong>SERVICE_ROLE_KEY</strong> 绝不能暴露在前端，仅用于后端</p>
                 <p>3. 请妥善保管这些密钥，不要提交到公开代码库</p>
-                <p>4. 更新密钥后需要重启 Supabase 服务</p>
+                <p>4. 生成的密钥需要与您的 JWT_SECRET 匹配才能正常工作</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-blue-500 bg-blue-50 dark:bg-blue-950">
+              <CardHeader>
+                <CardTitle className="text-blue-700 dark:text-blue-400">📝 验证密钥</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <p>您可以在 <a href="https://jwt.io" target="_blank" rel="noopener noreferrer" className="underline">jwt.io</a> 验证生成的密钥：</p>
+                <ol className="list-decimal list-inside space-y-1 ml-2">
+                  <li>将生成的密钥粘贴到 "Encoded" 区域</li>
+                  <li>在 "Verify Signature" 区域输入您的 JWT_SECRET（十六进制）</li>
+                  <li>确认显示 "Signature Verified" ✓</li>
+                </ol>
               </CardContent>
             </Card>
           </>
