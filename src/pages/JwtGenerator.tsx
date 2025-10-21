@@ -4,13 +4,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { Copy, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const JwtGenerator = () => {
   const { toast } = useToast();
   const [jwtSecret, setJwtSecret] = useState('6a9f3c8d7b2e5f1a4c7d9e0b3a5f8c2d1e4f7a8b0c3d5e7f9a2b4c6d8e0f1a');
-  const [issuer, setIssuer] = useState('supabase.ppfsui.com');
+  const [issuer, setIssuer] = useState('https://supabase.ppfsui.com:8443');
+  const [secretFormat, setSecretFormat] = useState<'text' | 'hex'>('text');
   const [anonKey, setAnonKey] = useState('');
   const [serviceKey, setServiceKey] = useState('');
   const [copied, setCopied] = useState<'anon' | 'service' | null>(null);
@@ -37,26 +39,45 @@ const JwtGenerator = () => {
       .replace(/=+$/, '');
   };
 
-  // HMAC-SHA256 签名 - 使用文本密钥（Supabase 标准）
-  const hmacSha256 = async (message: string, secret: string): Promise<string> => {
+  // 十六进制转字节数组
+  const hexToBytes = (hex: string): Uint8Array => {
+    const bytes = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < hex.length; i += 2) {
+      bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+    }
+    return bytes;
+  };
+
+  // HMAC-SHA256 签名
+  const hmacSha256 = async (message: string, secret: string, isHex: boolean): Promise<string> => {
     try {
       const encoder = new TextEncoder();
       
-      // 将密钥作为普通文本字符串导入
-      const keyData = encoder.encode(secret);
+      let keyBuffer: ArrayBuffer;
+      if (isHex) {
+        const bytes = hexToBytes(secret);
+        const bufferLike = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+        keyBuffer = bufferLike instanceof ArrayBuffer ? bufferLike : new ArrayBuffer(bytes.byteLength);
+      } else {
+        const bytes = encoder.encode(secret);
+        const bufferLike = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+        keyBuffer = bufferLike instanceof ArrayBuffer ? bufferLike : new ArrayBuffer(bytes.byteLength);
+      }
+      
       const cryptoKey = await crypto.subtle.importKey(
         'raw',
-        keyData,
+        keyBuffer,
         { name: 'HMAC', hash: 'SHA-256' },
         false,
         ['sign']
       );
 
-      // 对消息进行签名
-      const messageData = encoder.encode(message);
-      const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+      const messageBytes = encoder.encode(message);
+      const messageBufferLike = messageBytes.buffer.slice(messageBytes.byteOffset, messageBytes.byteOffset + messageBytes.byteLength);
+      const messageBuffer = messageBufferLike instanceof ArrayBuffer ? messageBufferLike : new ArrayBuffer(messageBytes.byteLength);
       
-      // 将签名转换为 Base64 URL
+      const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageBuffer);
+      
       return arrayBufferToBase64Url(signature);
     } catch (error) {
       throw new Error(`签名失败: ${error instanceof Error ? error.message : '未知错误'}`);
@@ -73,7 +94,7 @@ const JwtGenerator = () => {
       const payload = {
         iss: issuer,
         role: role,
-        exp: 1999084800 // 2033-05-18
+        exp: 1999084800
       };
 
       // 编码 Header 和 Payload
@@ -81,8 +102,8 @@ const JwtGenerator = () => {
       const encodedPayload = base64UrlEncode(JSON.stringify(payload));
       const unsignedToken = `${encodedHeader}.${encodedPayload}`;
 
-      // 使用文本密钥进行签名（Supabase 标准方法）
-      const signature = await hmacSha256(unsignedToken, jwtSecret);
+      // 根据选择的格式签名
+      const signature = await hmacSha256(unsignedToken, jwtSecret, secretFormat === 'hex');
       const jwt = `${unsignedToken}.${signature}`;
 
       if (role === 'anon') {
@@ -137,6 +158,22 @@ const JwtGenerator = () => {
           </p>
         </div>
 
+        <Card className="border-blue-500 bg-blue-50 dark:bg-blue-950">
+          <CardHeader>
+            <CardTitle className="text-blue-700 dark:text-blue-400 flex items-center gap-2">
+              <AlertCircle className="h-5 w-5" />
+              重要说明
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <p><strong>Issuer 必须是完整 URL：</strong></p>
+            <code className="block p-2 bg-background rounded text-xs">
+              https://supabase.ppfsui.com:8443
+            </code>
+            <p className="mt-3"><strong>JWT_SECRET 格式：</strong>如果您的密钥是通过 <code>openssl rand -hex 32</code> 生成的，请选择"十六进制"格式。</p>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>配置信息</CardTitle>
@@ -146,31 +183,49 @@ const JwtGenerator = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="jwtSecret">JWT_SECRET（普通文本）</Label>
+              <Label htmlFor="jwtSecret">JWT_SECRET</Label>
               <Input
                 id="jwtSecret"
                 type="text"
                 value={jwtSecret}
                 onChange={(e) => setJwtSecret(e.target.value)}
-                placeholder="your-super-secret-jwt-token-with-at-least-32-characters-long"
+                placeholder="6a9f3c8d7b2e5f1a4c7d9e0b3a5f8c2d1e4f7a8b0c3d5e7f9a2b4c6d8e0f1a"
                 className="font-mono text-sm"
               />
+            </div>
+
+            <div className="space-y-3">
+              <Label>JWT_SECRET 格式</Label>
+              <RadioGroup value={secretFormat} onValueChange={(value) => setSecretFormat(value as 'text' | 'hex')}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="hex" id="hex" />
+                  <Label htmlFor="hex" className="font-normal cursor-pointer">
+                    十六进制 (Hex) - 如：<code className="text-xs">6a9f3c8d7b2e...</code>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="text" id="text" />
+                  <Label htmlFor="text" className="font-normal cursor-pointer">
+                    普通文本 (Text) - 直接使用字符串
+                  </Label>
+                </div>
+              </RadioGroup>
               <p className="text-xs text-muted-foreground">
-                来自 .env 文件的 JWT_SECRET（直接复制，无需转换）
+                如果您的 JWT_SECRET 是 64 个十六进制字符（通过 openssl rand -hex 32 生成），请选择"十六进制"
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="issuer">Issuer（签发者）</Label>
+              <Label htmlFor="issuer">Issuer（完整 URL）</Label>
               <Input
                 id="issuer"
                 type="text"
                 value={issuer}
                 onChange={(e) => setIssuer(e.target.value)}
-                placeholder="supabase.ppfsui.com"
+                placeholder="https://supabase.ppfsui.com:8443"
               />
               <p className="text-xs text-muted-foreground">
-                您的 Supabase 域名（不包含 https:// 和端口）
+                从您的 .env 中复制 API_EXTERNAL_URL 或 SITE_URL 的值
               </p>
             </div>
 
@@ -212,7 +267,7 @@ const JwtGenerator = () => {
                   <div className="mt-4 p-3 bg-muted rounded-md">
                     <p className="text-sm font-semibold mb-2">更新前端配置：</p>
                     <code className="text-xs break-all block">
-                      {`// src/integrations/supabase/client.ts\nconst SUPABASE_PUBLISHABLE_KEY = "${anonKey.substring(0, 50)}..."`}
+                      {`const SUPABASE_PUBLISHABLE_KEY = "${anonKey.substring(0, 50)}..."`}
                     </code>
                   </div>
                 </CardContent>
@@ -246,12 +301,6 @@ const JwtGenerator = () => {
                     readOnly
                     className="font-mono text-xs h-24"
                   />
-                  <div className="mt-4 p-3 bg-muted rounded-md">
-                    <p className="text-sm font-semibold mb-2">更新 Supabase Secrets：</p>
-                    <code className="text-xs break-all block">
-                      {`SUPABASE_SERVICE_ROLE_KEY="${serviceKey.substring(0, 50)}..."`}
-                    </code>
-                  </div>
                 </CardContent>
               </Card>
             )}
@@ -260,27 +309,38 @@ const JwtGenerator = () => {
               <CardHeader>
                 <CardTitle className="text-green-700 dark:text-green-400 flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5" />
-                  ✓ 如何验证密钥
+                  如何在 jwt.io 验证
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
-                <p className="font-semibold">在 <a href="https://jwt.io" target="_blank" rel="noopener noreferrer" className="underline">jwt.io</a> 验证生成的密钥：</p>
                 <ol className="list-decimal list-inside space-y-2 ml-2">
-                  <li>将生成的密钥（ANON_KEY 或 SERVICE_ROLE_KEY）粘贴到左侧 "Encoded" 区域</li>
-                  <li className="font-bold text-green-700 dark:text-green-400">
-                    在右下角 "Verify Signature" 的密钥输入框中，直接粘贴您的 JWT_SECRET：
-                    <code className="block mt-1 p-2 bg-background rounded text-xs break-all">
-                      {jwtSecret}
-                    </code>
+                  <li>访问 <a href="https://jwt.io" target="_blank" rel="noopener noreferrer" className="underline font-semibold">jwt.io</a></li>
+                  <li>将生成的密钥粘贴到左侧 "Encoded" 区域</li>
+                  <li className="font-bold">
+                    在右下角 "VERIFY SIGNATURE" 的密钥输入框中输入：
+                    <div className="mt-2 p-3 bg-background rounded border">
+                      {secretFormat === 'hex' ? (
+                        <>
+                          <p className="text-xs mb-2 text-amber-600 dark:text-amber-400">⚠️ 十六进制格式需要特殊处理</p>
+                          <p className="text-xs">由于 jwt.io 不直接支持十六进制密钥，您需要：</p>
+                          <ol className="text-xs list-decimal list-inside ml-3 mt-1 space-y-1">
+                            <li>确保在本工具中选择了"十六进制"格式</li>
+                            <li>或者，在 jwt.io 中将密钥按十六进制字节输入</li>
+                            <li>更简单的方法：切换到"普通文本"格式重新生成</li>
+                          </ol>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-xs font-semibold mb-1">直接输入以下内容：</p>
+                          <code className="text-xs break-all block p-2 bg-muted rounded">
+                            {jwtSecret}
+                          </code>
+                        </>
+                      )}
+                    </div>
                   </li>
                   <li>确认显示 <span className="text-green-600 font-semibold">"Signature Verified ✓"</span></li>
                 </ol>
-                <div className="flex items-start gap-2 p-3 bg-yellow-50 dark:bg-yellow-950 rounded border border-yellow-200 dark:border-yellow-800 mt-3">
-                  <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-yellow-800 dark:text-yellow-200 text-xs">
-                    <strong>重要：</strong>JWT_SECRET 是普通文本字符串，在 jwt.io 验证时直接输入原始值即可，不需要进行任何格式转换！
-                  </p>
-                </div>
               </CardContent>
             </Card>
 
