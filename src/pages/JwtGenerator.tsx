@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { Copy, CheckCircle2, AlertCircle } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
 
 const JwtGenerator = () => {
   const { toast } = useToast();
@@ -18,6 +19,8 @@ const JwtGenerator = () => {
   const [testToken, setTestToken] = useState('');
   const [verifyResult, setVerifyResult] = useState<{ valid: boolean; message: string } | null>(null);
   const [copied, setCopied] = useState<'anon' | 'service' | null>(null);
+  const [testingConnection, setTestingConnection] = useState(false);
+  const [connectionResult, setConnectionResult] = useState<any>(null);
 
   // Base64 URL 编码（用于字符串）
   const base64UrlEncode = (str: string): string => {
@@ -150,52 +153,128 @@ const JwtGenerator = () => {
     }
   };
 
-  const verifyExistingToken = async () => {
-    try {
-      setVerifyResult(null);
-      
-      if (!testToken) {
-        toast({
-          title: '请输入 Token',
-          description: '请在输入框中粘贴要验证的 JWT token',
-          variant: 'destructive',
-        });
-        return;
-      }
+  const verifyToken = async () => {
+    if (!testToken) {
+      toast({
+        title: '错误',
+        description: '请输入要验证的密钥',
+        variant: 'destructive',
+      });
+      return;
+    }
 
-      // 分解 JWT
+    try {
       const parts = testToken.split('.');
       if (parts.length !== 3) {
-        setVerifyResult({ valid: false, message: '无效的 JWT 格式' });
-        return;
+        throw new Error('JWT 格式无效');
       }
 
-      const [header, payload, signature] = parts;
-      const unsignedToken = `${header}.${payload}`;
+      const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
+      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
 
-      // 重新计算签名
-      const expectedSignature = await hmacSha256(unsignedToken, jwtSecret, secretFormat === 'hex');
+      if (jwtSecret) {
+        const message = `${parts[0]}.${parts[1]}`;
+        const expectedSignature = await hmacSha256(message, jwtSecret, secretFormat === 'hex');
+        const actualSignature = parts[2];
 
-      if (signature === expectedSignature) {
-        // 解码 payload 显示内容
-        const payloadJson = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
-        setVerifyResult({ 
-          valid: true, 
-          message: `✓ 签名验证通过！\n\nPayload:\n${JSON.stringify(payloadJson, null, 2)}` 
-        });
+        if (expectedSignature === actualSignature) {
+          const resultMessage = `✅ 密钥有效！\n\n解码信息：\n${JSON.stringify({ header, payload }, null, 2)}`;
+          setVerifyResult({ valid: true, message: resultMessage });
+          toast({
+            title: '验证成功',
+            description: '密钥签名有效',
+          });
+        } else {
+          const resultMessage = `❌ 签名验证失败！\n\n当前密钥可能不是使用此 JWT_SECRET 生成的。\n\n解码信息：\n${JSON.stringify({ header, payload }, null, 2)}`;
+          setVerifyResult({ valid: false, message: resultMessage });
+          toast({
+            title: '验证失败',
+            description: '密钥签名不匹配',
+            variant: 'destructive',
+          });
+        }
       } else {
-        setVerifyResult({ 
-          valid: false, 
-          message: `✗ 签名验证失败\n\n期望签名: ${expectedSignature}\n实际签名: ${signature}\n\n请检查 JWT_SECRET 是否正确，或尝试切换格式（十六进制/普通文本）` 
-        });
+        const resultMessage = `ℹ️ 未提供 JWT_SECRET，无法验证签名\n\n解码信息：\n${JSON.stringify({ header, payload }, null, 2)}`;
+        setVerifyResult({ valid: false, message: resultMessage });
       }
     } catch (error) {
-      setVerifyResult({ 
-        valid: false, 
-        message: `验证出错: ${error instanceof Error ? error.message : '未知错误'}` 
+      toast({
+        title: '验证错误',
+        description: error instanceof Error ? error.message : '未知错误',
+        variant: 'destructive',
       });
     }
   };
+
+  const testDatabaseConnection = async () => {
+    if (!anonKey) {
+      toast({
+        title: '错误',
+        description: '请先生成密钥',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setTestingConnection(true);
+    setConnectionResult(null);
+
+    try {
+      const testUrl = 'https://supabase.ppfsui.com:8443';
+      const testClient = createClient(testUrl, anonKey);
+
+      // Test 1: Check auth status
+      const { data: authData, error: authError } = await testClient.auth.getSession();
+      
+      // Test 2: Try to query a table
+      const { data: tableData, error: tableError } = await testClient
+        .from('profiles')
+        .select('count')
+        .limit(1);
+
+      const result = {
+        timestamp: new Date().toISOString(),
+        url: testUrl,
+        authTest: {
+          success: !authError,
+          error: authError?.message || null,
+        },
+        databaseTest: {
+          success: !tableError || tableError.code === 'PGRST116',
+          error: tableError?.message || null,
+          hint: tableError ? '如果启用了 RLS 策略，这是预期的' : '连接成功',
+        },
+      };
+
+      setConnectionResult(result);
+
+      if (!authError) {
+        toast({
+          title: '连接成功',
+          description: '成功连接到 Supabase 数据库',
+        });
+      } else {
+        toast({
+          title: '连接测试完成',
+          description: '请查看下方详细结果',
+        });
+      }
+    } catch (error: any) {
+      setConnectionResult({
+        timestamp: new Date().toISOString(),
+        error: error.message,
+        success: false,
+      });
+      toast({
+        title: '连接失败',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setTestingConnection(false);
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -244,7 +323,7 @@ const JwtGenerator = () => {
               />
             </div>
 
-            <Button onClick={verifyExistingToken} variant="outline" className="w-full">
+            <Button onClick={verifyToken} variant="outline" className="w-full">
               验证现有密钥
             </Button>
 
@@ -695,6 +774,38 @@ GOTRUE_MAILER_EXTERNAL_HOSTS=${issuer}:8443`}
                   </li>
                   <li>确认显示 <span className="text-green-600 font-semibold">"Signature Verified ✓"</span></li>
                 </ol>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>测试数据库连接</CardTitle>
+                <CardDescription>
+                  验证您的 Supabase 实例是否可以使用生成的密钥访问
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button 
+                  onClick={testDatabaseConnection} 
+                  disabled={!anonKey || testingConnection}
+                  className="w-full"
+                  variant="outline"
+                >
+                  {testingConnection ? '测试中...' : '测试连接'}
+                </Button>
+
+                {connectionResult && (
+                  <div className={`p-4 rounded-lg ${
+                    connectionResult.success === false 
+                      ? 'bg-red-50 dark:bg-red-950 border border-red-200' 
+                      : 'bg-green-50 dark:bg-green-950 border border-green-200'
+                  }`}>
+                    <h4 className="font-semibold mb-2 text-sm">连接测试结果：</h4>
+                    <pre className="text-xs overflow-auto bg-background p-3 rounded">
+                      {JSON.stringify(connectionResult, null, 2)}
+                    </pre>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
