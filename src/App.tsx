@@ -11,6 +11,7 @@ import RecordDetail from "./pages/RecordDetail";
 import Auth from "./pages/Auth";
 import SetupAdmin from "./pages/SetupAdmin";
 import AdminUsers from "./pages/AdminUsers";
+import JwtGenerator from "./pages/JwtGenerator";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
                 <AdminUsers />
               </ProtectedRoute>
             } />
+            <Route path="/jwt-generator" element={<JwtGenerator />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
